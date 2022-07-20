@@ -3,6 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# src
+src/
+**src/
+src/**/
+**/src/**
+!**/src/**
+*src/
+
 # C extensions
 *.so
 
@@ -152,10 +160,3 @@ Thumbs.db
 *.wpr
 *.wpu
 *.h5
-
-# src
-src/
-**src/
-src/**/
-**/src/**
-!**/src/**

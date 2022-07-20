@@ -155,3 +155,5 @@ Thumbs.db
 
 # src
 src/
+**src/
+src/**/

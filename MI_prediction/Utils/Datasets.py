@@ -8,6 +8,39 @@ def get_epochs(dset):
     X = dset[range(len(dset))][0]
     return X,y
 
+def get_epochs_by_labels(X,y):
+    labels = np.unique(y)
+    Xl = {}
+    yl = {}
+    for i in labels:
+        Xl[str(i)] = X[y==i]
+        yl[str(i)] = y[y==i]
+    return Xl,yl
+
+def get_runs(dset, n_trials=20):
+    X,y = get_epochs(dset)
+    X,y = get_epochs_by_labels(X,y)
+
+    d_shape = X['0'].shape[0]
+
+    Xr = {}
+    yr = {}
+
+    idx = 0
+    run = 0
+    while idx+n_trials <= d_shape:
+        if idx+2*n_trials > d_shape:
+            l_idx = d_shape
+        else:
+            l_idx = idx + n_trials
+        
+        Xr['run_'+str(run)] = np.concatenate([X[str(i)][idx:l_idx,:,:] for i in X.keys()],axis=0)
+        yr['run_'+str(run)] = np.concatenate([y[str(i)][idx:l_idx] for i in y.keys()],axis=0)
+
+        idx += n_trials
+        run += 1
+    return Xr,yr
+
 class DataLoader():
     def __init__(self, dataset_name="BNCI2014001"):
         super(DataLoader, self).__init__()

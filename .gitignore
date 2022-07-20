@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+# do not include Results to the repo
+*.p
+
+# tmp folder which temporal models are stored
+tmp/
+
 # Distribution / packaging
 .Python
 build/
@@ -127,3 +133,22 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Temporal and hidden files
+*~
+.*
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Projects and Dataformats
+*.wpr
+*.wpu
+*.h5

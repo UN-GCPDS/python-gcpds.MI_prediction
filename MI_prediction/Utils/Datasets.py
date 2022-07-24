@@ -8,8 +8,11 @@ from ..Datasets.Moabb import MOABBDataset_Rest
 from ..Datasets import Cho2017_Rest
 from .Windowers import create_windows_from_events as create_windows_from_events_rest
 
-def get_epochs(dset):
-    y = dset[range(len(dset))][1]
+def get_epochs(dset, labels=True):
+    if labels:
+        y = dset[range(len(dset))][1]
+    else:
+        y = None
     X = dset[range(len(dset))][0]
     return X,y
 

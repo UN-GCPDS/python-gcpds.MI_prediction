@@ -5,7 +5,6 @@ from braindecode.preprocessing.preprocess import preprocess
 from braindecode.preprocessing.windowers import create_windows_from_events
 
 from ..Datasets.Moabb import MOABBDataset_Rest
-from ..Datasets import Cho2017_Rest
 from .Windowers import create_windows_from_events as create_windows_from_events_rest
 
 def get_epochs(dset, labels=True):

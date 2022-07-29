@@ -1,4 +1,7 @@
 from braindecode.preprocessing.preprocess import Preprocessor
+from sklearn.base import BaseEstimator, TransformerMixin
+from mne.decoding import CSP
+import numpy as np
 import copy
 
 def filterbank_preprocessor(freqs):
@@ -16,3 +19,18 @@ def filterbank(ds, preprocess = [], filters = [], standarization = [], channels_
         d_tmp.preprocess_data(preprocessors=preprocessors)
         ds_filt.append(d_tmp)
     return ds_filt
+
+class FBCSP(TransformerMixin,BaseEstimator):
+    def __init__(self, n_components=8, reg=None, log=True, norm_trace=False):
+        self.n_components = n_components
+        self.reg = reg
+        self.log = log
+        self.norm_trace = norm_trace
+    
+    def fit(self, X, y):
+        self.csp_mdl = CSP(n_components=self.n_components, reg=self.reg, log=self.log, norm_trace=self.norm_trace)
+        self.mdls = [self.csp_mdl.fit(X[:,:,:,i], y) for i in range(X.shape[-1])]
+        return self
+    
+    def transform(self, X):
+        return np.concatenate([self.mdls[i].transform(X[:,:,:,i]) for i in range(len(self.mdls))],axis=-1)

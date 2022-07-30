@@ -7,6 +7,14 @@ from braindecode.preprocessing.windowers import create_windows_from_events
 from ..Datasets.Moabb import MOABBDataset_Rest
 from .Windowers import create_windows_from_events as create_windows_from_events_rest
 
+def get_labels(X,y, labels):
+    idx_l = np.zeros(y.shape,dtype=bool)
+    for l in labels:
+        idx_l += (y==l)
+    X = X[idx_l,::]
+    y = y[idx_l]
+    return X, y
+
 def get_epochs(dset, labels=True):
     if labels:
         y = dset[range(len(dset))][1]

@@ -5,6 +5,21 @@ from braindecode.preprocessing.windowers import _compute_window_inds, _check_win
 from braindecode.datasets import BaseConcatDataset
 from joblib import Parallel, delayed
 
+def create_windows(win = 1, start_offset = 0, end_offset = 0, duration = 4, overlap = 0.0):
+    st_offsets = []
+    ed_offsets = []
+
+    cont = start_offset + win
+    while start_offset + win <= duration + end_offset:
+        print(start_offset,cont-duration)
+        st_offsets.append(start_offset)
+        ed_offsets.append(cont-duration)
+
+        start_offset += win*(1-overlap)
+        cont += win*(1-overlap)
+
+    return st_offsets, ed_offsets
+
 def create_windows_from_events(
         concat_ds, trial_start_offset_samples=0, trial_stop_offset_samples=0,
         window_size_samples=None, window_stride_samples=None,

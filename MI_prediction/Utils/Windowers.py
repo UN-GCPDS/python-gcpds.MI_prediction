@@ -11,7 +11,6 @@ def create_windows(win = 1, start_offset = 0, end_offset = 0, duration = 4, over
 
     cont = start_offset + win
     while start_offset + win <= duration + end_offset:
-        print(start_offset,cont-duration)
         st_offsets.append(start_offset)
         ed_offsets.append(cont-duration)
 

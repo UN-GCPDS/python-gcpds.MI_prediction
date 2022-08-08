@@ -4,6 +4,11 @@ from mne.decoding import CSP
 import numpy as np
 import copy
 
+def moments(epoch, axis=0):
+    return np.concatenate([epoch[axis].mean(axis=-1,keepdims=True),epoch[axis].var(axis=-1,keepdims=True),
+    epoch[axis].max(axis=-1,keepdims=True),epoch[axis].min(axis=-1,keepdims=True),
+    np.median(epoch[axis],axis=-1,keepdims=True)],axis=-1)
+
 def filterbank_preprocessor(freqs):
     FB = {}
     for freq in freqs:

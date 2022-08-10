@@ -9,11 +9,11 @@ def moments(epoch, axis=0):
     epoch[axis].max(axis=-1,keepdims=True),epoch[axis].min(axis=-1,keepdims=True),
     np.median(epoch[axis],axis=-1,keepdims=True)],axis=-1)
 
-def filterbank_preprocessor(freqs):
+def filterbank_preprocessor(freqs, **kwargs):
     FB = {}
     for freq in freqs:
         print('band to filter: {} Hz'.format(freq))
-        FB[str(freq[0])+'_'+str(freq[1])] = Preprocessor('filter', l_freq=freq[0], h_freq=freq[1])
+        FB[str(freq[0])+'_'+str(freq[1])] = Preprocessor('filter', l_freq=freq[0], h_freq=freq[1], **kwargs)
     return FB
 
 def filterbank(ds, preprocess = [], filters = [], standarization = [], channels_prep = []):

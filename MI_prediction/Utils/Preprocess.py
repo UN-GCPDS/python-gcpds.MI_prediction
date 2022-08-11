@@ -4,6 +4,17 @@ from mne.decoding import CSP
 import numpy as np
 import copy
 
+class scaler_list(BaseEstimator,TransformerMixin):
+    def __init__(self,scaler):
+        self.scaler = scaler
+
+    def fit(self,X):
+        self.scalers = [copy.deepcopy(self.scaler).fit(x) for x in X]
+        return self
+
+    def transform(self,X):
+        return [self.scalers[i].transform(X[i]) for i in range(len(X))]
+
 def moments(epoch, axis=0):
     return np.concatenate([epoch[axis].mean(axis=-1,keepdims=True),epoch[axis].var(axis=-1,keepdims=True),
     epoch[axis].max(axis=-1,keepdims=True),epoch[axis].min(axis=-1,keepdims=True),

@@ -1,7 +1,9 @@
+import numpy as np
 from tensorflow.keras.initializers import GlorotNormal
 from tensorflow.keras.layers import Input, Dense, concatenate
 from tensorflow.keras.regularizers import l1_l2
 from tensorflow.keras.models import Model
+
 
 
 def DLSMR(input_feats = [], Q1f = 1.5, Qff = 0.5, l1 = 1e-3, l2 = 1e-3, act1 = 'tanh', actf = 'tanh', seed = 100):

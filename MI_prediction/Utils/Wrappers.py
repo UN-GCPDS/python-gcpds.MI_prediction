@@ -23,7 +23,7 @@ class MultiInputScaler(BaseEstimator, TransformerMixin):
         return FunctionTransformer(
             func=lambda X: [X[:, i[0]:i[1]] for i in idx])
 
-    def fit(self, X):
+    def fit(self, X,y=None):
         X = self.feature_encoder().transform(X)
         self.scalers = [copy.deepcopy(self.scaler).fit(x) for x in X]
         return self

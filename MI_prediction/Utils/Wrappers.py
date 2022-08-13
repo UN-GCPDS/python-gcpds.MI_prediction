@@ -2,6 +2,7 @@ from scikeras.wrappers import KerasRegressor
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.base import BaseEstimator, TransformerMixin
 import copy
+import numpy as np
 
 class MultiInputScaler(BaseEstimator, TransformerMixin):
     def __init__(self, scaler, input_feats, keep_dims=False):

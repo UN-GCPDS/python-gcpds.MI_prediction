@@ -60,6 +60,7 @@ class DataLoader():
     def __init__(self, dataset_name="BNCI2014001"):
         super(DataLoader, self).__init__()
         self.dataset_name = dataset_name
+        self.dataset = None
 
     def load_data(self,subject_ids=None):
         self.dataset = MOABBDataset(dataset_name=self.dataset_name, subject_ids=subject_ids)

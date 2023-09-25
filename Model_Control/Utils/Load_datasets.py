@@ -2,9 +2,10 @@ from braindecode.datasets.moabb import MOABBDataset
 from braindecode.preprocessing.preprocess import (exponential_moving_standardize, preprocess, Preprocessor, scale)
 from braindecode.preprocessing.windowers import create_windows_from_events
 import numpy as np
-
+import tensorflow as tf 
 
 def name_to_numclasses(class_names):
+
     classes = []
     for i in class_names:
         if i=='left hand':
@@ -31,6 +32,18 @@ def get_classes(X,y, class_names):
 
 
 def get_epochs(dset):
+    """
+    function to organize data in to sets (trials,channels,time_serie) and (labels)
+
+    Parameters
+    ----------
+    dset : Array of data 
+    Returns
+    -------
+    X (array) => (trials,channels,time_serie) 
+    y (array) => (labels)
+
+    """
     y = []
     X = []
     for i in range(len(dset)):
@@ -41,8 +54,35 @@ def get_epochs(dset):
     X = np.concatenate(X,axis=0)
     return X,y
 
+def getChannels(dataset_name:str):
+    """
+    Parameters
+    ----------
+    dataset_name : str
+        [Cho2017,BNCI2014001]
+    """
+    ##JUST EEG CHANNELS
 
-def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:float = 4., high_cut_hz:float = 38., trial_start_offset_seconds:float = -0.5,trial_stop_offset_seconds:float=0,Channels=None,Classes = None,split:bool=True):
+    DataChannels = {
+        'Cho2017': [
+            "Fp1", "AF7", "AF3", "F1", "F3", "F5", "F7", "FT7", "FC5", "FC3", "FC1",
+            "C1", "C3", "C5", "T7", "TP7", "CP5", "CP3", "CP1", "P1", "P3", "P5", "P7",
+            "P9", "PO7", "PO3", "O1", "Iz", "Oz", "POz", "Pz", "CPz", "Fpz", "Fp2",
+            "AF8", "AF4", "AFz", "Fz", "F2", "F4", "F6", "F8", "FT8", "FC6", "FC4",
+            "FC2", "FCz", "Cz", "C2", "C4", "C6", "T8", "TP8", "CP6", "CP4", "CP2",
+            "P2", "P4", "P6", "P8", "P10", "PO8", "PO4", "O2",
+        ],
+        'BNCI2014001': [
+        "Fz", "FC3", "FC1", "FCz", "FC2", "FC4", "C5", "C3", "C1", "Cz", "C2",
+        "C4", "C6", "CP3", "CP1", "CPz", "CP2", "CP4", "P1", "Pz", "P2", "POz"
+        ]
+    }
+
+    return DataChannels[dataset_name]
+
+
+
+def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:float = 4., high_cut_hz:float = 38., trial_start_offset_seconds:float = -0.5,trial_stop_offset_seconds:float=0,Preprocess=None):
     """
     Parameters
     ----------
@@ -58,13 +98,7 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
         , by default -0.5
     trial_stop_offset_seconds : float, optional
         , by default 0
-    Channels : _type_, optional
-        , by default None
-    Classes : _type_, optional
-        , by default None
-    split : bool, optional
-        , by default True
-
+    Preprocess : list , optional of Preprocessor from braindecode.preprocessing.preprocess
     Returns
     -------
     X_train => (trials,channels,time_serie) matriz
@@ -74,37 +108,35 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
     sfreq   => frequency of sampling  float
     info    => general information for dataset dataframe
     """
+
+    ### DEFINIMOS SEGMETACIÓN SEGUN LA BASE DE DATOS
+    sessions = {
+        'BNCI2014001':True,
+        'Cho2017':False,
+    }
+    ##CARGAMOS LA BASE DE DATOS
+    dataset = MOABBDataset(dataset_name=dataset_name, subject_ids=[subject_id]) ## CARGAMOS LA BASE DE DATOS
+
     
-
-
-
-    dataset = MOABBDataset(dataset_name=dataset_name, subject_ids=[subject_id])
-
     # Parameters for exponential moving standardization
-    factor_new = 1e-3 ##DEFINIR SI PUEDE SER DINAMICO O NO
-    init_block_size = 1000 ## DEFINIR SI PUEDE SER DINAMICO O NO
-
-    if Channels == None:
-        preprocessors = [
-            Preprocessor('pick_types', eeg=True, meg=False, stim=False),  # Keep EEG sensors
-            Preprocessor(scale, factor=1e6, apply_on_array=True),  # Convert from V to uV
-            Preprocessor('filter', l_freq=low_cut_hz, h_freq=high_cut_hz),  # Bandpass filter
-            Preprocessor(exponential_moving_standardize,  # Exponential moving standardization
-                        factor_new=factor_new, init_block_size=init_block_size)
-        ]
-    else:
+    
+    ##Obtenemos los canales de la base de datos
+    Channels = getChannels(dataset_name)
+    if Preprocess == None:
+        factor_new = 1e-3 ##DEFINIR SI PUEDE SER DINAMICO O NO
+        init_block_size = 1000 ## DEFINIR SI PUEDE SER DINAMICO O NO
         preprocessors = [
             Preprocessor('pick_types', eeg=True, meg=False, stim=False),  # Keep EEG sensors
             Preprocessor('pick_channels',ch_names=Channels),
             Preprocessor(scale, factor=1e6, apply_on_array=True),  # Convert from V to uV
             Preprocessor('filter', l_freq=low_cut_hz, h_freq=high_cut_hz),  # Bandpass filter
             Preprocessor(exponential_moving_standardize,  # Exponential moving standardization
-                        factor_new=factor_new, init_block_size=init_block_size)
+            factor_new=factor_new, init_block_size=init_block_size)
         ]
-
-    # Transform the data
-    preprocess(dataset, preprocessors)
-
+        # Transform the data
+        preprocess(dataset, preprocessors)
+    else:
+        preprocess(dataset, Preprocess)
     
     # Extract sampling frequency, check that they are same in all datasets
     sfreq = dataset.datasets[0].raw.info['sfreq']
@@ -122,7 +154,9 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
     )
 
     splitted = windows_dataset.split('session')
-    if split:
+
+
+    if sessions[dataset_name]:
         sess1 = 'session_T'
         sess2 = 'session_E'
     else:
@@ -135,8 +169,13 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
     X_train,y_train = get_epochs(train_set)
     X_valid,y_valid = get_epochs(valid_set)
 
-    if Classes is not None:
-        X_train,y_train = get_classes(X_train,y_train, Classes)
-        X_valid,y_valid = get_classes(X_valid,y_valid, Classes)
+    # if Classes is not None:
+    #     X_train,y_train = get_classes(X_train,y_train, Classes)
+    #     X_valid,y_valid = get_classes(X_valid,y_valid, Classes)
     info = dataset.datasets[0].raw.info
     return X_train,y_train,X_valid,y_valid,sfreq,info
+
+
+### COMPILE MODEL
+
+

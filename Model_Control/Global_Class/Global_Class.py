@@ -14,8 +14,9 @@ from Model_Control.Models.Shallownet_1conv2d_rff import Shallownet_1conv2d_rff
 from Model_Control.Utils.Load_datasets import load_dataset
 from Model_Control.Utils.compile_model import getOptimizer
 from Model_Control.Utils.compile_model import get_callbacks
+from Model_Control.Utils.compile_model import get_loss
+from Model_Control.Utils.training_model import train_model_cv
 
-#### CARGAMOS LAS BASES DE DATOS
 
 
 class DatasetControl:
@@ -26,6 +27,15 @@ class DatasetControl:
      }
     
      def __init__(self,DatasetName:str='BCI2A'): 
+         """
+         Parameters
+         ----------
+         DatasetName : str,
+             - BCI2A 
+             - GIGA
+             - PHYSIONET
+             Represent the dataset to use, by default 'BCI2A'
+         """
          
          self.DatasetName = self.datasets[DatasetName]
          self.X_train = None
@@ -35,6 +45,7 @@ class DatasetControl:
          self.sfreq = None
          self.info = None
          self.callbacks = None
+         self.metrics = None
     
      def LoadDataset(self,Preprocess:list=None,subject:int = 1,low_cut_hz:float = 4,high_cut_hz:float = 38,trial_start_offset_seconds:float = -0.5,trial_stop_offset_seconds:float = 0):
             """
@@ -82,9 +93,10 @@ class ModelControl(DatasetControl):
          parameters : dict
              Dictionary with all the parameters to create the model
          """
-         ## INICIALIZAMOS CLASE PADRE
+         ## IN ICIALIZAMOS CLASE PADRE
          super().__init__(DatasetName)
          self.Model = self.Models[Model](**parameters) ## CONSTRUIMOS EL MODELO CON SUS RESPECTIVOS PARAMETROS
+         self.name_model = Model
           
      def CompileModel(self,optimizer:str = 'adam',lr:float = 0.01, metrics:list(str)=['accuracy'] ,callbacks_names = None,call_args =None):
          """
@@ -123,7 +135,18 @@ class ModelControl(DatasetControl):
             else:
                 self.callbacks = get_callbacks(callbacks_names=callbacks_names,call_args=call_args)
             
-            ### DEFINIMOS LA FUNCIÓN DEL PERDIDA DEL MODELO
+            ### PENSAR COMO PERMITIR AGREGAR FUNCIONES CUSTOM
+            self.loss = get_loss(self.name_model)
+
+
+            ### COMPILAMOS EL MODELO
+
+            self.Model.compile(loss=self.loss, optimizer= self.opt, metrics=self.metrics, loss_weights=self.loss_weights)
+     
+
+     def train_model(self):
+         pass
+
             
             
             

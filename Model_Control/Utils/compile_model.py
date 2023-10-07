@@ -95,3 +95,23 @@ def get_callbacks(callbacks_names,call_args):
             callb = ReduceLROnPlateau(monitor= call_args[i]['monitor'], patience= call_args[i]['patience'], factor= call_args[i]['factor'], mode= call_args[i]['mode'], verbose=call_args[i]['verbose'], min_lr= call_args[i]['min_lr'])
         callbacks[j]=callb
     return callbacks
+
+
+
+def get_loss(name_model:str):
+    """
+
+    Parameters
+    ----------
+    name_model : str
+        
+    """
+
+    loss_model = {
+    
+    }
+
+    list_loss = []
+    
+
+    return list_loss

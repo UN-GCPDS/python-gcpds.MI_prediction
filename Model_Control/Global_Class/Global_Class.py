@@ -33,21 +33,37 @@ class DatasetControl:
          DatasetName : str,
              - BCI2A 
              - GIGA
-             - PHYSIONET
              Represent the dataset to use, by default 'BCI2A'
          """
          
          self.DatasetName = self.datasets[DatasetName]
-         self.X_train = None
-         self.y_train = None
-         self.X_valid = None
-         self.y_valid = None
-         self.sfreq = None
-         self.info = None
-         self.callbacks = None
-         self.metrics = None
-    
-     def LoadDataset(self,Preprocess:list=None,subject:int = 1,low_cut_hz:float = 4,high_cut_hz:float = 38,trial_start_offset_seconds:float = -0.5,trial_stop_offset_seconds:float = 0):
+        #  self.X_train = None
+        #  self.y_train = None
+        #  self.X_valid = None
+        #  self.y_valid = None
+        #  self.sfreq = None
+        #  self.info = None
+        #  self.callbacks = None
+        #  self.metrics = None
+     
+     def getSessionsRuns(self):
+         
+
+         runs = {
+         'BNCI2014001':['run_0', 'run_1', 'run_2', 'run_3', 'run_4', 'run_5'],
+         'Cho2017':['run_0','run_1','run_2','run_3','run_4'],
+         }
+         sessions = {
+            'BNCI2014001':['session_E', 'session_T'],
+            'Cho2017':['session_0']
+         }
+
+
+         return {'sessions':sessions[self.DatasetName],'runs':runs[self.DatasetName]}
+
+
+
+     def LoadDataset(self,Preprocess:list=None,subject:int = 1,low_cut_hz:float = 4,high_cut_hz:float = 38,trial_start_offset_seconds:float = -0.5,trial_stop_offset_seconds:float = 0, Sessions_Runs:dict = None):
             """
             Parameters
             ----------
@@ -63,9 +79,11 @@ class DatasetControl:
                 , by default 0
             Preprocess : list , optional of Preprocessor from braindecode.preprocessing.preprocess
             """
-         ###LOAD DATASET QUEDA ALMACENADO EN VARIABLES DE OBJETO ## INCLUYENDO EL PREPROCESO
-            self.X_train,self.y_train,self.X_valid,self.y_valid,self.sfreq,self.info = load_dataset(dataset_name=self.DatasetName,Preprocess=Preprocess,subject_id=subject,low_cut_hz= low_cut_hz,high_cut_hz=high_cut_hz, trial_start_offset_seconds= trial_start_offset_seconds,trial_stop_offset_seconds=trial_stop_offset_seconds)
-         
+            ###LOAD DATASET QUEDA ALMACENADO EN VARIABLES DE OBJETO ## INCLUYENDO EL PREPROCESO
+            X,Y,sfreq = load_dataset(dataset_name=self.DatasetName,Preprocess=Preprocess,subject_id=subject,low_cut_hz= low_cut_hz,high_cut_hz=high_cut_hz, trial_start_offset_seconds= trial_start_offset_seconds,trial_stop_offset_seconds=trial_stop_offset_seconds,Sessions_Runs = Sessions_Runs)
+            
+            return X,Y,sfreq
+
 
 
 class ModelControl(DatasetControl): 
@@ -93,7 +111,7 @@ class ModelControl(DatasetControl):
          parameters : dict
              Dictionary with all the parameters to create the model
          """
-         ## IN ICIALIZAMOS CLASE PADRE
+         ## INICIALIZAMOS CLASE PADRE
          super().__init__(DatasetName)
          self.Model = self.Models[Model](**parameters) ## CONSTRUIMOS EL MODELO CON SUS RESPECTIVOS PARAMETROS
          self.name_model = Model
@@ -123,7 +141,7 @@ class ModelControl(DatasetControl):
          if (self.X_train == None):
             print("===========================================")
             print("====NO HA SIDO CARGADO LA BASE DE DATOS====")
-            print("=USA EL METODO LoadDataset PARA PODER OBTENER LA INFORMACIÓN DEL SUJETO=")
+            print("=USA EL METODO LoadDataset PARA PODER OBTENER LA INFORMACIÓN DEL SUJETO")
          else:
             self.opt = getOptimizer(optimizer)(learning_rate = lr) ## OBTENEMOS EL OPTIMIZADOR
             self.metrics = metrics

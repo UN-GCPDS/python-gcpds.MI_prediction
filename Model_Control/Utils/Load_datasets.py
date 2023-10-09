@@ -30,6 +30,21 @@ def get_classes(X,y, class_names):
     y_c = np.concatenate(y_c,axis=0)
     return X_c, y_c
 
+def getSessionsRuns(datasetName):
+         
+
+         runs = {
+         'BNCI2014001':['run_0', 'run_1', 'run_2', 'run_3', 'run_4', 'run_5'],
+         'Cho2017':['run_0','run_1','run_2','run_3','run_4'],
+         }
+         sessions = {
+            'BNCI2014001':['session_E', 'session_T'],
+            'Cho2017':['session_0']
+         }
+
+
+         return {'sessions':sessions[datasetName],'runs':runs[datasetName]}
+
 
 def get_epochs(dset):
     """
@@ -82,7 +97,7 @@ def getChannels(dataset_name:str):
 
 
 
-def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:float = 4., high_cut_hz:float = 38., trial_start_offset_seconds:float = -0.5,trial_stop_offset_seconds:float=0,Preprocess=None):
+def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:float = 4., high_cut_hz:float = 38., trial_start_offset_seconds:float = -0.5,trial_stop_offset_seconds:float=0,Preprocess=None,Sessions_Runs:dict = None):
     """
     Parameters
     ----------
@@ -109,11 +124,7 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
     info    => general information for dataset dataframe
     """
 
-    ### DEFINIMOS SEGMETACIÓN SEGUN LA BASE DE DATOS
-    sessions = {
-        'BNCI2014001':True,
-        'Cho2017':False,
-    }
+
     ##CARGAMOS LA BASE DE DATOS
     dataset = MOABBDataset(dataset_name=dataset_name, subject_ids=[subject_id]) ## CARGAMOS LA BASE DE DATOS
 
@@ -153,29 +164,105 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
         preload=True,
     )
 
-    splitted = windows_dataset.split('session')
+    if (Sessions_Runs == None):
 
+        ### EN ESTE CASO OBTENEMOS TODAS LAS SESSIONES Y TODOS LOS RUNS
 
-    if sessions[dataset_name]:
-        sess1 = 'session_T'
-        sess2 = 'session_E'
-    else:
-        sess1 = 'session_0'
-        sess2 = 'session_0'
+        splitted = windows_dataset.split('session')
+        session_run = getSessionsRuns(dataset_name)
+        sessions = session_run['sessions']
+        
+        X = []
+        y = []
+        for sesion in sessions:
+
+            X_session,y_session = get_epochs(splitted[sesion])
+            X.append(X_session)
+            y.append(y_session)
+        
+        ## DEVOLVEMOS UNA LISTA SEGMENTADA POR SESION CON TODOS LOS RUNS
+
+        return X,y,sfreq
     
-    train_set = splitted[sess1]
-    valid_set = splitted[sess2]
 
-    X_train,y_train = get_epochs(train_set)
-    X_valid,y_valid = get_epochs(valid_set)
+    else: 
+        if(dataset_name == 'Cho2017'):
+           
+           runs_index={
+             'run_0':[0,20,100,120],
+             'run_1':[20,40,120,140],
+             'run_2':[40,60,140,160],
+             'run_3':[60,80,160,180],
+             'run_4':[80,100,180,200]
+           }
+           ### CON GIGA NECESITAMOS UN PROCESO DIFERENTE
+           ### PRIMERO CARGAMOS TODA LA BASE DE DATOS
+           splitted = windows_dataset.split('session')
+           session_run = getSessionsRuns(dataset_name)
+           sesion = session_run['sessions'][0]
+           runs = Sessions_Runs['runs']
+           X_session,y_session = get_epochs(splitted[sesion])
+           X_s = []
+           y_s = []
+           X = []
+           y = []
+           for run in runs:
+               
+               index_run = runs_index[run]
+               ### VERIFICAR ESTA BASE DE DATOS
+               X_run_0 = X_session[index_run[0]:index_run[1],:,:,:]
+               X_run_1 = X_session[index_run[2]:index_run[3],:,:,:]
+               X_run = np.concat((X_run_0,X_run_1),axis = 0) 
 
-    # if Classes is not None:
-    #     X_train,y_train = get_classes(X_train,y_train, Classes)
-    #     X_valid,y_valid = get_classes(X_valid,y_valid, Classes)
-    info = dataset.datasets[0].raw.info
-    return X_train,y_train,X_valid,y_valid,sfreq,info
+               y_run_0 = y_session[index_run[0]:index_run[1]]
+               y_run_1 = y_session[index_run[2]:index_run[3]]
+               y_run = np.concat((y_run_0,y_run_1),axis = 0)
+               
+               ### run por sesion
+               X_s.append(X_run)
+               y_s.append(y_run)
+           
+
+           X.append(X_s)
+           y.append(y_s)
+
+           return X,y,sfreq
+
+           
 
 
-### COMPILE MODEL
+        else:
+            sesiones_objetivo = Sessions_Runs['sessions']
+            runs_objetivo = Sessions_Runs['runs']
+
+            ### PRIMERO OBTENEMOS UN DICTIONARIO SEPARADO POR SESSIONES
+            splitted = windows_dataset.split('session')
+            ### POR CADA SESSION SEPARAMOS POR RUNS
+            dictionary_dataset = {}
+            for sesion in sesiones_objetivo:
+                list_runs = []
+                dataset_runs = splitted[sesion].split('run')
+                for run in runs_objetivo:
+                    list_runs.append(dataset_runs[run]) ## AGREGAMOS EL RUN CORRESPONDIENTE
+                
+                dictionary_dataset[sesion] = list_runs ## GUARDAMOS LA LISTA CON CADA RUN
+            
+            ### ORGANIZAMOS CADA UNA DE LAS BASES DE DATOS
+            X = []
+            y = []
+            for sesion in sesiones_objetivo:
+                x_sesion = []
+                y_sesion = []
+                for run in range(0,len(dictionary_dataset[sesion])):
+                    ## OBTENEMOS LOS DATOS DE CADA RUN SEPARADO YA EN ETIQUETA Y LABEL
+                    x_run,y_run = get_epochs(dictionary_dataset[sesion][run])
+                    x_sesion.append(x_run)
+                    y_sesion.append(y_run)
+                X.append(x_sesion)
+                y.append(y_sesion)
+            
+            return X,y,sfreq
+
+
 
 

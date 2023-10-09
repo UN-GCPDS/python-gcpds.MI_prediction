@@ -37,14 +37,7 @@ class DatasetControl:
          """
          
          self.DatasetName = self.datasets[DatasetName]
-        #  self.X_train = None
-        #  self.y_train = None
-        #  self.X_valid = None
-        #  self.y_valid = None
-        #  self.sfreq = None
-        #  self.info = None
-        #  self.callbacks = None
-        #  self.metrics = None
+
      
      def getSessionsRuns(self):
          
@@ -114,11 +107,78 @@ class ModelControl(DatasetControl):
          ## INICIALIZAMOS CLASE PADRE
          super().__init__(DatasetName)
          self.Model = self.Models[Model](**parameters) ## CONSTRUIMOS EL MODELO CON SUS RESPECTIVOS PARAMETROS
-         self.name_model = Model
-          
-     def CompileModel(self,optimizer:str = 'adam',lr:float = 0.01, metrics:list(str)=['accuracy'] ,callbacks_names = None,call_args =None):
+         self.name_model = Model ## HERE ALL GOOD
+    
+     def getCallBack(self,callbacks_names,call_args):
          """
-         Function to define the hyperparameters and loss functions
+         Parameters
+         -------------------------
+         callbacks_names (dict)
+         call_args (list)
+         """
+         callbacks = get_callbacks(callbacks_names,call_args)
+         return callbacks
+     
+     def getLoss(self,loss_list:list):
+          """
+          parameters
+          ------------------------------
+          loss_list list(str): list to get loss functions
+             options :
+                -mse
+                -msle
+                -binary_crossentropy
+                -binary_focal_crossentropy
+                -categorical_crossentropy
+                -categorical_focal_crossentropy
+                -CategoricalHinge
+                -CosineSimilarity
+                -Hinge
+                -Huber
+                -LogCosh
+                -Poisson
+                -SparseCategoricalCrossentropy
+                -SquaredHinge
+        
+          return 
+          -------------------------
+          list [tf.keras.losses.functions]
+
+          """
+          losses = get_loss(loss_list)
+
+          return losses
+     
+     def getOptimizer(self,optimizer:str,lr:float = 0.01):
+          """
+          parameters
+          ----------------------------
+          optimizer (str) = Name of optimizer to use
+              - Adadelta
+              - Adafactor
+              - Adagrad
+              - Adam
+              - AdamW
+              - Adamax
+              - Ftrl
+              - Lion
+              - Nadam
+              - RMSprop
+              - SGD
+          lr (float) = learning rate for optimizer default value (0.01)
+
+          return 
+          -------------------------
+          optimizer [tf.keras.optimizer]
+          """
+          opt = getOptimizer(optimizer)(learning_rate = lr)
+          return opt
+
+
+     def generateHyperParametersModel(self,optimizer:str = 'adam',lr:float = 0.01, metrics:list(str)=['accuracy'] ,callbacks_names = None,call_args =None,loss_list:list=None,loss_weights:list=[2.5,1]):
+         """
+         Function to define the hyperparameters and loss functions ## 
+         ### optional function if i want to compile with the properties of this library
 
          Parameters
          -----------------------------
@@ -137,32 +197,31 @@ class ModelControl(DatasetControl):
          metrics list(str): default ['accuracy']
          """
 
-         
-         if (self.X_train == None):
-            print("===========================================")
-            print("====NO HA SIDO CARGADO LA BASE DE DATOS====")
-            print("=USA EL METODO LoadDataset PARA PODER OBTENER LA INFORMACIÓN DEL SUJETO")
-         else:
-            self.opt = getOptimizer(optimizer)(learning_rate = lr) ## OBTENEMOS EL OPTIMIZADOR
-            self.metrics = metrics
+         self.opt = getOptimizer(optimizer)(learning_rate = lr) ## OBTENEMOS EL OPTIMIZADOR
+         self.metrics = metrics
+         self.loss_weights = loss_weights
             
-            if (callbacks_names == None or call_args == None):
+         if (callbacks_names == None or call_args == None):
                 print("=========================================")
                 print("====NO SE HA DEFINIDO NINGUN CALLBACK====")
                 print("=========================================")
-            else:
+         else:
                 self.callbacks = get_callbacks(callbacks_names=callbacks_names,call_args=call_args)
             
-            ### PENSAR COMO PERMITIR AGREGAR FUNCIONES CUSTOM
-            self.loss = get_loss(self.name_model)
+
+         self.loss = get_loss(loss_list)
 
 
-            ### COMPILAMOS EL MODELO
 
-            self.Model.compile(loss=self.loss, optimizer= self.opt, metrics=self.metrics, loss_weights=self.loss_weights)
-     
+     def train_model(self,Model = None,optimizer = None,loss = None,callbacks = None,loss_weights = None,X_train=None,Y_train=None,x_val=None,y_val=None):
+         
+         """
+         FUNCTION TO TRAIN A COMPILE MODEL
+         -----------------------------------------------
+         """
+         
 
-     def train_model(self):
+
          pass
 
             

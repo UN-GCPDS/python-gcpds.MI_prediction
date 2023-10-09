@@ -76,6 +76,8 @@ class TimeHistory(Callback):
         if self.save_path:
             write_log(filepath=self.save_path, data=[time_diff], mode='a')
 
+
+
 def get_callbacks(callbacks_names,call_args):
     callbacks = dict()
     for i,j in enumerate(callbacks_names):#range(len(callbacks_names)):
@@ -98,20 +100,49 @@ def get_callbacks(callbacks_names,call_args):
 
 
 
-def get_loss(name_model:str):
+def get_loss(List_lost:list):
     """
-
     Parameters
     ----------
-    name_model : str
-        
+    List_lost (str) : list with the name of lost functions that is going to be use it for the model
+
+    options :
+         -mse
+         -msle
+         -binary_crossentropy
+         -binary_focal_crossentropy
+         -categorical_crossentropy
+         -categorical_focal_crossentropy
+         -CategoricalHinge
+         -CosineSimilarity
+         -Hinge
+         -Huber
+         -LogCosh
+         -Poisson
+         -SparseCategoricalCrossentropy
+         -SquaredHinge
     """
 
     loss_model = {
-    
+      'mse': tf.keras.losses.MeanSquaredError(),
+      'msle':tf.keras.losses.MeanSquaredLogarithmicError(),
+      'binary_crossentropy':tf.keras.losses.BinaryCrossentropy(),
+      'binary_focal_crossentropy':tf.keras.losses.BinaryFocalCrossentropy(),
+      'categorical_crossentropy':tf.keras.losses.CategoricalCrossentropy(),
+      'categorical_focal_crossentropy':tf.keras.losses.CategoricalFocalCrossentropy(),
+      'CategoricalHinge':tf.keras.losses.CategoricalHinge(),
+      'CosineSimilarity':tf.keras.losses.CosineSimilarity(),
+      'Hinge':tf.keras.losses.Hinge(),
+      'Huber':tf.keras.losses.Huber(),
+      'LogCosh':tf.keras.losses.LogCosh(),
+      'Poisson':tf.keras.losses.Poisson(),
+      'SparseCategoricalCrossentropy':tf.keras.losses.SparseCategoricalCrossentropy(),
+      'SquaredHinge':tf.keras.losses.SquaredHinge(),
     }
-
-    list_loss = []
+    list_loss_functions = []
+    for loss in List_lost:
+        
+        list_loss_functions.append(loss_model[loss])
     
 
-    return list_loss
+    return list_loss_functions 

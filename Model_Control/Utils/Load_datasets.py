@@ -96,7 +96,6 @@ def getChannels(dataset_name:str):
     return DataChannels[dataset_name]
 
 
-
 def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:float = 4., high_cut_hz:float = 38., trial_start_offset_seconds:float = -0.5,trial_stop_offset_seconds:float=0,Preprocess=None,Sessions_Runs:dict = None):
     """
     Parameters

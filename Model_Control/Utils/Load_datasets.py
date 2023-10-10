@@ -6,6 +6,13 @@ import tensorflow as tf
 
 def name_to_numclasses(class_names):
 
+    """
+    class_names:list of name of each class
+    Returns
+    -------
+    list  of  ordinal encoding for each class
+    """
+
     classes = []
     for i in class_names:
         if i=='left hand':
@@ -113,14 +120,18 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
     trial_stop_offset_seconds : float, optional
         , by default 0
     Preprocess : list , optional of Preprocessor from braindecode.preprocessing.preprocess
+    
+    Sessions_Runs: dict , optional , default value None in that case you will load all the database for that subject
+                  dictionary with two keys [sessions,runs] 
+                  -sessions : list with the names of the sessions that you want to load
+                  -runs : list with the names of the runs that you want to load, 
+                  you can verify all that names, with the function getSessionsRuns that its related with the dataset that you selectionate when you create the object
+
     Returns
     -------
-    X_train => (trials,channels,time_serie) matriz
-    y_train => (trials,channels,time_serie) matriz
-    X_valid => (trials,channels,time_serie) matriz
-    y_valid => (trials,channels,time_serie) matriz
+    X_data => [[session[runs]]]  runs => (trial,channels,time_serie)
+    y_data => [[session[runs]]]  runs => (labels,)
     sfreq   => frequency of sampling  float
-    info    => general information for dataset dataframe
     """
 
 

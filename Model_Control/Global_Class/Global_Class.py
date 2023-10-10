@@ -19,7 +19,15 @@ from Model_Control.Utils.training_model import redirectToTrain
 
 
 
-class DatasetControl:
+class DatasetControl():
+     
+     """
+     Class to control de loading of eeg database
+     -----------------------------------------------
+     Databases 
+     - BCI2A
+     - GIGA
+     """
      
      datasets = {
          'GIGA':'Cho2017',
@@ -40,6 +48,16 @@ class DatasetControl:
 
      
      def getSessionsRuns(self):
+         
+         """
+         Function to return the segmentation of database
+
+         Returns
+         -------
+         dictionary:
+            -sessions: represent an array with the name of each session in the database
+            -runs : represent an array with the name of each run in the database
+         """
          
 
          runs = {
@@ -71,6 +89,19 @@ class DatasetControl:
             trial_stop_offset_seconds : float, optional
                 , by default 0
             Preprocess : list , optional of Preprocessor from braindecode.preprocessing.preprocess
+
+            Sessions_Runs: dict , optional , default value None in that case you will load all the database for that subject
+                  dictionary with two keys [sessions,runs] 
+                  -sessions : list with the names of the sessions that you want to load
+                  -runs : list with the names of the runs that you want to load, 
+                  you can verify all that names, with the function getSessionsRuns that its related with the dataset that you selectionate when you create the object
+            
+            Return
+            -----------------------------------
+
+            X (list): list that it's divided with a array of each session and run  time series (trials,Channels,time_serie)
+            Y (list): list that it's divided with a array of each session and run label or class
+            sfreq : float with the sample frequency
             """
             ###LOAD DATASET QUEDA ALMACENADO EN VARIABLES DE OBJETO ## INCLUYENDO EL PREPROCESO
             X,Y,sfreq = load_dataset(dataset_name=self.DatasetName,Preprocess=Preprocess,subject_id=subject,low_cut_hz= low_cut_hz,high_cut_hz=high_cut_hz, trial_start_offset_seconds= trial_start_offset_seconds,trial_stop_offset_seconds=trial_stop_offset_seconds,Sessions_Runs = Sessions_Runs)
@@ -80,6 +111,16 @@ class DatasetControl:
 
 
 class ModelControl(DatasetControl): 
+     
+     """
+     Model to control the training of a eeg model you can:
+
+      -Load  a dataset of MI [BCI2A,GIGA]
+      -Load a specific model [DeepConvNet,DMTL_BCI,EEGNet,MIN2NET,MTVAE_standard,MTVAE_with_loss,MTVAE_with_loss,PST_attention,ShallowConvNet,Shallownet_1conv2d,Shallownet_1conv2d_rff]
+      -Organize callbacks with tensorflow
+      -Organize optimizer of tensorflow
+      -Train model with diferent validation mode
+     """
 
      Models = {
           'DeepConvNet': DeepConvNet,
@@ -242,7 +283,7 @@ class ModelControl(DatasetControl):
         
      
 
-     def train_model(self,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,callbacks_names = None,call_args = None,validation_mode:str = None, batch_size:int =30,epochs:int = 100,verbose:int =1,MTVAE:bool=False):
+     def train_model(self,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,callbacks_names = None,call_args = None,validation_mode:str = None, batch_size:int =30,epochs:int = 100,verbose:int =1):
          
          """
         Parameters
@@ -269,6 +310,12 @@ class ModelControl(DatasetControl):
             number of epochs to train the model
         verbose : int [0,1]
             option during training to watch the description of the training. 0 didn't print anything and 1 print all the information
+        
+        Return
+        ---------------------------------------------------------
+        History: could be a list or a object with the information of each training for the selected model
+        X_val : input data to evaluate the model
+        y_val : target data for evaluate the model
         """
          
          if (call_args == None or callbacks_names == None):
@@ -286,7 +333,7 @@ class ModelControl(DatasetControl):
 
             if(self.Model.compiled):
                 
-                self.Model, History , x_val , y_val=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,MTVAE)
+                self.Model, History , x_val , y_val=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose)
                 
                 ## PARA CALCULAR EL ACCURRACY UNA VEZ LO TENGA CLARO HASTA ESTE PUNTO PROCEDEMOS A GENERAR ESE APARTADO
                 return History,x_val,y_val
@@ -296,19 +343,21 @@ class ModelControl(DatasetControl):
                print("==============================================================================")
                print("NO SE HA SUMINISTRADO UN MODELO Y EL MODELO DE LA CLASE AUN NO SE HA COMPILADO")
                print("==============================================================================")
+               return None,None,None
 
             
          else:
             
             if(Model.compiled):
                 self.Model = Model ### DEFINIMOS EL MODELO COMO PROPIO DEL OBJETO
-                self.Model, History , x_val , y_val=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,MTVAE)
+                self.Model, History , x_val , y_val=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose)
                 return History,x_val,y_val
             else:
                
                print("==============================================================================")
                print("NO SE HA SUMINISTRADO UN MODELO COMPILADO")
                print("==============================================================================")
+               return None,None,None
             
             
             

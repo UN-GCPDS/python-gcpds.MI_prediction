@@ -16,6 +16,10 @@ def getOptimizer(Opt_name:str='adam'):
     ----------
     Opt_name : str, optional
         name of optimizer to use, by default 'adam'
+    
+    Return
+    ----------
+    tf.keras.optimizer
     """
 
     opt = {
@@ -121,6 +125,9 @@ def get_loss(List_lost:list):
          -Poisson
          -SparseCategoricalCrossentropy
          -SquaredHinge
+    Return
+    -------------------
+    list with tf.keras.losses
     """
 
     loss_model = {

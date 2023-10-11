@@ -46,12 +46,16 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                 ### ENTRENAMOS DE MANERA ESTANDAR
                                
                 history = Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose)
-                return Model,history,x_val,y_val
+                preds = Model.predict(x_val)
+                acc = get_accuracy(preds,y_true,decimals=2)
+                return Model,history,acc
             else:
                 ### ENTRENAMOS DE MANERA ESTANDAR
                                
                 history = Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks = callbacks)
-                return Model,history,x_val,y_val
+                preds = Model.predict(x_val)
+                acc = get_accuracy(preds,y_true,decimals=2)
+                return Model,history,acc
             
         else:
 

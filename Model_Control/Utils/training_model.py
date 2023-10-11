@@ -17,7 +17,7 @@ def get_pred_labels(preds):
     
 def get_accuracy(preds,y_true,decimals=2):
     pred_labels = get_pred_labels(preds)
-    acc = np.mean(pred_labels==np.argmax(y_true))
+    acc = np.mean(pred_labels==np.argmax(y_true,axis = -1 ))
     return np.round(acc*100,decimals=decimals)
 
 def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batchSize,epochs,verbose):

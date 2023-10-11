@@ -7,7 +7,6 @@ from ..Models.EEGNet_fusion import EEGNet_fusion
 from ..Models.MIN2NET import MIN2NET
 from ..Models.MTVAE_standard import MTVAE
 from ..Models.MTVAE_with_loss import MTVAE_KL
-from ..Models.PST_attention import PST_attention
 from ..Models.ShallowConvNet import ShallowConvNet
 from ..Models.Shallownet_1conv2d import Shallownet_1conv2d
 from ..Models.Shallownet_1conv2d_rff import Shallownet_1conv2d_rff
@@ -130,7 +129,6 @@ class ModelControl(DatasetControl):
           'MIN2NET':MIN2NET,
           'MTVAE_standard':MTVAE,
           'MTVAE_with_loss':MTVAE_KL,
-          'PST_attention':PST_attention,
           'ShallowConvNet':ShallowConvNet,
           'Shallownet_1conv2d':Shallownet_1conv2d,
           'Shallownet_1conv2d_rff':Shallownet_1conv2d_rff,

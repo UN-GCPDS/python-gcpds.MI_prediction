@@ -223,7 +223,7 @@ class ModelControl(DatasetControl):
           return opt
 
 
-     def compileModel(self,Model = None,optimizer:str = 'adam',lr:float = 0.01, metrics:list(str)=['accuracy'] ,loss_list:list=None,loss_weights:list=[2.5,1]):
+     def compileModel(self,Model = None,optimizer:str = 'adam',lr:float = 0.01, metrics:list=['accuracy'] ,loss_list:list=None,loss_weights:list=[2.5,1]):
          """
          Function to define the hyperparameters and loss functions ## 
          ### optional function.

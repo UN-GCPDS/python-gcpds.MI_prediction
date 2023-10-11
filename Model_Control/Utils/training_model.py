@@ -84,7 +84,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                 elif validation_mode=='schirrmeister2017_legal':
 
                     X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train, test_size=0.2)
-                    callbacks_names = [callbacks['early_stopping_train']]
+                    callbacks_names = [callbacks['early_stopping_train'],callbacks['checkpoint_train']]
 
                     history1 = Model.fit(X_tr, y_tr,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
 

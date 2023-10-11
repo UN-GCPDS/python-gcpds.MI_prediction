@@ -253,7 +253,7 @@ class ModelControl():
                  self.opt = getOptimizer(optimizer)(learning_rate = lr) ## OBTENEMOS EL OPTIMIZADOR
                  self.metrics = metrics
                  self.loss = get_loss(loss_list)
-                 self.Model.compile(loss=self.loss, optimizer= self.optimizer, metrics=self.metrics)
+                 self.Model.compile(loss=self.loss, optimizer= self.opt, metrics=self.metrics)
                  print("======================================")
                  print("MODELO COMPILADO EXITOSAMENTE")
                  print("======================================")
@@ -265,7 +265,7 @@ class ModelControl():
                  self.metrics = metrics
                  self.loss = get_loss(loss_list)
                  self.Model = Model
-                 self.Model.compile(loss=self.loss, optimizer= self.optimizer, metrics=self.metrics)
+                 self.Model.compile(loss=self.loss, optimizer= self.opt, metrics=self.metrics)
                  print("======================================")
                  print("MODELO COMPILADO EXITOSAMENTE")
                  print("======================================")

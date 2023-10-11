@@ -192,7 +192,7 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
         
         ## DEVOLVEMOS UNA LISTA SEGMENTADA POR SESION CON TODOS LOS RUNS
 
-        return X,y,sfreq
+        return np.array(X),np.array(y),sfreq
     
 
     else: 

@@ -236,7 +236,7 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
            X.append(X_s)
            y.append(y_s)
 
-           return X,y,sfreq
+           return np.array(X),np.array(y),sfreq
 
            
 
@@ -271,7 +271,7 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
                 X.append(x_sesion)
                 y.append(y_sesion)
             
-            return X,y,sfreq
+            return np.array(X),np.array(y),sfreq
 
 
 

@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split,StratifiedKFold
 
 
 
-def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size:int,epochs:int,verbose:int,MTVAE:bool=False):
+def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose):
         """
         Parameters
         ------------------------------------------
@@ -33,14 +33,16 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
             option during training to watch the description of the training. 0 didn't print anything and 1 print all the information
         """
         ### ENTRENAMOS EL MODELO
-        
+        print("VALORES DE LA FUNCIÓN: ",Model,validation_mode, batch_size,epochs,verbose)
         if (validation_mode == None):
             if(callbacks == None):
                 ### ENTRENAMOS DE MANERA ESTANDAR
+                print("ENTRENAMOS: ",batch_size)
                 history = Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batch_size,epochs=epochs,verbose=verbose)
                 return Model,history,x_val,y_val
             else:
                 ### ENTRENAMOS DE MANERA ESTANDAR
+                print("ENTRENAMOS: ",batch_size)
                 history = Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batch_size,epochs=epochs,verbose=verbose,callbacks = callbacks)
                 return history
             
@@ -87,7 +89,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train, test_size=0.2)
                     callbacks_names = [callbacks['early_stopping_train']]
 
-
+                    print("ENTRENAMOS: ",batch_size)
                     history1 = Model.fit(X_tr, y_tr,X_ts, y_ts,batch_size=batch_size,epochs=epochs,
                                                 verbose=verbose,callbacks=callbacks_names)
 
@@ -100,7 +102,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     callbacks['early_stopping_valid'].patience = (stop_epoch)*2
                     callbacks_names = [callbacks['early_stopping_valid']]
 
-
+                    print("ENTRENAMOS 2: ",batch_size)
                     history2= Model.fit(X_train,Y_train,X_ts, y_ts,batch_size=batch_size,epochs=(stop_epoch+1)*2,
                                                                     verbose=verbose,callbacks=callbacks_names)
                     History.append(history2)

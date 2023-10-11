@@ -134,7 +134,7 @@ class ModelControl():
           'Shallownet_1conv2d_rff':Shallownet_1conv2d_rff,
      }
 
-     def __init__(self,Model:str = None,parameters:dict = None,DatasetName:str='BCI2A'):
+     def __init__(self,Model:str = None,parameters:dict = None):
          """
          Parameters
          ----------
@@ -153,7 +153,6 @@ class ModelControl():
             self.opt = None
             self.metrics = None
             self.loss = None
-            self.loss_weights = [2.5,1]
     
      def getCallBack(self,callbacks_names,call_args):
          """
@@ -221,7 +220,7 @@ class ModelControl():
           return opt
 
 
-     def compileModel(self,Model = None,optimizer:str = 'adam',lr:float = 0.01, metrics:list=['accuracy'] ,loss_list:list=None,loss_weights:list=[2.5,1]):
+     def compileModel(self,Model = None,optimizer:str = 'adam',lr:float = 0.01, metrics:list=['accuracy'] ,loss_list:list=None):
          """
          Function to define the hyperparameters and loss functions ## 
          ### optional function.
@@ -253,11 +252,8 @@ class ModelControl():
                  ### COMPILAMOS EL MODELO SELECCIONADO
                  self.opt = getOptimizer(optimizer)(learning_rate = lr) ## OBTENEMOS EL OPTIMIZADOR
                  self.metrics = metrics
-                 self.loss_weights = loss_weights
                  self.loss = get_loss(loss_list)
-                 tf.keras.backend.clear_session()
-                 tf.random.set_seed(self.seed)
-                 self.Model.compile(loss=self.loss, optimizer= self.optimizer, metrics=self.metrics, loss_weights=self.loss_weights)
+                 self.Model.compile(loss=self.loss, optimizer= self.optimizer, metrics=self.metrics)
                  print("======================================")
                  print("MODELO COMPILADO EXITOSAMENTE")
                  print("======================================")
@@ -267,12 +263,11 @@ class ModelControl():
              ### COMPILAMOS EL MODELO SELECCIONADO
                  self.opt = getOptimizer(optimizer)(learning_rate = lr) ## OBTENEMOS EL OPTIMIZADOR
                  self.metrics = metrics
-                 self.loss_weights = loss_weights
                  self.loss = get_loss(loss_list)
                  self.Model = Model
                  tf.keras.backend.clear_session()
                  tf.random.set_seed(self.seed)
-                 self.Model.compile(loss=self.loss, optimizer= self.optimizer, metrics=self.metrics, loss_weights=self.loss_weights)
+                 self.Model.compile(loss=self.loss, optimizer= self.optimizer, metrics=self.metrics)
                  print("======================================")
                  print("MODELO COMPILADO EXITOSAMENTE")
                  print("======================================")

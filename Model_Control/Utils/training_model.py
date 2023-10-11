@@ -95,7 +95,8 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     Model.load_weights(callbacks['checkpoint_train'].filepath)
                     callbacks['Threshold_valid'].threshold = loss_stop
                     callbacks['early_stopping_valid'].patience = (stop_epoch)*2
-                    callbacks_names = [callbacks['early_stopping_valid']]
+                    callbacks_names = [callbacks['Threshold_valid'],callbacks['checkpoint_valid'],
+                               callbacks['early_stopping_valid']]
 
                     history2= Model.fit(X_train,Y_train,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names)
                     History.append(history2)

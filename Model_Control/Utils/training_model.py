@@ -4,6 +4,14 @@ from sklearn.model_selection import train_test_split,StratifiedKFold
 
 
 
+def get_pred_labels(preds):
+        pred_labels = np.argmax(preds,axis=-1)
+        return pred_labels
+    
+def get_accuracy(preds,y_true,decimals=2):
+    pred_labels = get_pred_labels(preds)
+    acc = np.mean(pred_labels==y_true)
+    return np.round(acc*100,decimals=decimals)
 
 def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batchSize,epochs,verbose):
         """
@@ -43,7 +51,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                 ### ENTRENAMOS DE MANERA ESTANDAR
                                
                 history = Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks = callbacks)
-                return history
+                return Model,history,x_val,y_val
             
         else:
 
@@ -76,9 +84,12 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     history2= Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names)
                     History.append(history2)
                     Model.load_weights(callbacks['checkpoint_valid'].filepath)
+
+                    preds = Model.predict(x_val)
+                    acc = get_accuracy(preds,y_val,decimals=2)
                     
 
-                    return Model, History , x_val , y_val
+                    return Model, History , acc
 
 
                 elif validation_mode=='schirrmeister2017_legal':
@@ -101,8 +112,10 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     history2= Model.fit(X_train,Y_train,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names)
                     History.append(history2)
                     Model.load_weights(callbacks['checkpoint_valid'].filepath)
+                    preds = Model.predict(x_val)
+                    acc = get_accuracy(preds,y_val,decimals=2)
 
-                    return Model, History , x_val , y_val
+                    return Model, History , acc
 
                 elif validation_mode=='schirrmeister2021':
 
@@ -115,9 +128,11 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
 
                     Model.load_weights(callbacks['checkpoint_valid'].filepath)
 
+                    preds = Model.predict(x_val)
+                    acc = get_accuracy(preds,y_val,decimals=2)
 
 
-                    return Model, History, x_val , y_val
+                    return Model, History, acc
 
                     
                 elif validation_mode=='lawhern2018':
@@ -157,8 +172,9 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
 
                     preds = np.concatenate(preds,axis=0)
                     y_true = np.concatenate(y_true,axis=0)
+                    acc = get_accuracy(preds,y_true,decimals=2)
 
-                    return Model,History,preds,y_true
+                    return Model,History,acc
 
 
 

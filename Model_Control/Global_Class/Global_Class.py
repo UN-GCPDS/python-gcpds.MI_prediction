@@ -320,33 +320,17 @@ class ModelControl():
          if(Model == None):
             ### VERIFICAMOS EL MODELO PROPIO PARA SABER SI SE COMPILO
 
-            if(self.Model.compiled):
-                
-                self.Model, History , x_val , y_val=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose)
+            self.Model, History , x_val , y_val=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose)
                 
                 ## PARA CALCULAR EL ACCURRACY UNA VEZ LO TENGA CLARO HASTA ESTE PUNTO PROCEDEMOS A GENERAR ESE APARTADO
-                return History,x_val,y_val
-                
-            else:
-               
-               print("==============================================================================")
-               print("NO SE HA SUMINISTRADO UN MODELO Y EL MODELO DE LA CLASE AUN NO SE HA COMPILADO")
-               print("==============================================================================")
-               return None,None,None
+            return History,x_val,y_val
 
             
          else:
             
-            if(Model.compiled):
-                self.Model = Model ### DEFINIMOS EL MODELO COMO PROPIO DEL OBJETO
-                self.Model, History , x_val , y_val=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose)
-                return History,x_val,y_val
-            else:
-               
-               print("==============================================================================")
-               print("NO SE HA SUMINISTRADO UN MODELO COMPILADO")
-               print("==============================================================================")
-               return None,None,None
+            self.Model = Model ### DEFINIMOS EL MODELO COMO PROPIO DEL OBJETO
+            self.Model, History , x_val , y_val=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose)
+            return History,x_val,y_val
             
             
             

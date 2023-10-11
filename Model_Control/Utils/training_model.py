@@ -54,14 +54,14 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
             if(callbacks == None):
                 ### ENTRENAMOS DE MANERA ESTANDAR
                                
-                history = Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose,random_state = seed)
+                history = Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose)
                 preds = Model.predict(x_val)
                 acc = get_accuracy(preds,y_true,decimals=2)
                 return Model,history,acc
             else:
                 ### ENTRENAMOS DE MANERA ESTANDAR
                                
-                history = Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks = callbacks,random_state = seed)
+                history = Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks = callbacks)
                 preds = Model.predict(x_val)
                 acc = get_accuracy(preds,y_true,decimals=2)
                 return Model,history,acc
@@ -78,9 +78,9 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
             else:
                 History = []
                 if validation_mode=='schirrmeister2017':
-                    X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train, test_size=0.2)
+                    X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train, test_size=0.2,random_state=seed)
                     callbacks_names = [callbacks['early_stopping_train'],callbacks['checkpoint_train']]
-                    history1 = Model.fit(X_tr, y_tr,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names,random_state = seed)
+                    history1 = Model.fit(X_tr, y_tr,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
                     History.append(history1)
                     stop_epoch= np.argmin(history1.history['val_loss'])
                     loss_stop = history1.history['loss'][stop_epoch]
@@ -94,7 +94,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                                         callbacks['early_stopping_valid']]
 
 
-                    history2= Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names,random_state = seed)
+                    history2= Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names)
                     History.append(history2)
                     Model.load_weights(callbacks['checkpoint_valid'].filepath)
 
@@ -107,10 +107,10 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
 
                 elif validation_mode=='schirrmeister2017_legal':
   
-                    X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train, test_size=0.2,random_state=20200220)
+                    X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train, test_size=0.2,random_state=seed)
                     callbacks_names = [callbacks['early_stopping_train'],callbacks['checkpoint_train']]
 
-                    history1 = Model.fit(X_tr, y_tr,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names,random_state = seed)
+                    history1 = Model.fit(X_tr, y_tr,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
 
                     History.append(history1)
                     stop_epoch= np.argmin(history1.history['val_loss'])
@@ -122,7 +122,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     callbacks_names = [callbacks['Threshold_valid'],callbacks['checkpoint_valid'],
                                callbacks['early_stopping_valid']]
 
-                    history2= Model.fit(X_train,Y_train,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names,random_state = seed)
+                    history2= Model.fit(X_train,Y_train,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names)
                     History.append(history2)
                     Model.load_weights(callbacks['checkpoint_valid'].filepath)
                     preds = Model.predict(x_val)
@@ -136,7 +136,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     callbacks_names = [callbacks['checkpoint_valid'],
                                         callbacks['early_stopping_valid']]
 
-                    history= Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names,random_state = seed)
+                    history= Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
                     History.append(history)
 
                     Model.load_weights(callbacks['checkpoint_valid'].filepath)
@@ -162,11 +162,11 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                         X_train_, X_test_ = X_train[train_index], X_train[test_index]
                         y_train_, y_test_ = Y_train[train_index], Y_train[test_index]
 
-                        x_tr, x_v, y_tr, y_v = train_test_split(X_train_, y_train_, test_size=0.3)
+                        x_tr, x_v, y_tr, y_v = train_test_split(X_train_, y_train_, test_size=0.3,random_state=seed)
 
                         callbacks_names = [callbacks['early_stopping_train'+str(c+1)]]
 
-                        history= Model.fit(x_tr,y_tr,validation_data=(x_v, y_v),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names,random_state = seed)
+                        history= Model.fit(x_tr,y_tr,validation_data=(x_v, y_v),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
                         History.append(history)
 
                         Model.load_weights(callbacks['checkpoint_train'+str(c+1)].filepath)

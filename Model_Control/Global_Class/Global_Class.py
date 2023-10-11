@@ -265,8 +265,6 @@ class ModelControl():
                  self.metrics = metrics
                  self.loss = get_loss(loss_list)
                  self.Model = Model
-                 tf.keras.backend.clear_session()
-                 tf.random.set_seed(self.seed)
                  self.Model.compile(loss=self.loss, optimizer= self.optimizer, metrics=self.metrics)
                  print("======================================")
                  print("MODELO COMPILADO EXITOSAMENTE")

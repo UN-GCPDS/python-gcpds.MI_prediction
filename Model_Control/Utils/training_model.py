@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split,StratifiedKFold
 
 
 def get_pred_labels(preds):
+        
         pred_labels = np.argmax(preds,axis=-1)
         return pred_labels
         # for i in range(0,preds.shape[0]):
@@ -16,7 +17,7 @@ def get_pred_labels(preds):
     
 def get_accuracy(preds,y_true,decimals=2):
     pred_labels = get_pred_labels(preds)
-    acc = np.mean(pred_labels==y_true)
+    acc = np.mean(pred_labels==np.argmax(y_true))
     return np.round(acc*100,decimals=decimals)
 
 def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batchSize,epochs,verbose):

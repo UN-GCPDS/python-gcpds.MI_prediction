@@ -109,7 +109,7 @@ class DatasetControl():
 
 
 
-class ModelControl(DatasetControl): 
+class ModelControl(): 
      
      """
      Model to control the training of a eeg model you can:
@@ -143,8 +143,6 @@ class ModelControl(DatasetControl):
          parameters : dict
              Dictionary with all the parameters to create the model (necessary)
          """
-         ## INICIALIZAMOS CLASE PADRE
-         super().__init__(DatasetName)
          if(Model  == None):
             self.Model = None ## DEJAMOS QUE UTILIZEN SU PROPIO MODELO
             self.name_model = None

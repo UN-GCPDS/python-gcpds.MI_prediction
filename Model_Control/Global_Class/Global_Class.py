@@ -1,21 +1,21 @@
 ## CARGAMOS LOS MODELOS DE EEG
 import tensorflow as tf
-from Model_Control.Models.DeepConvNet import DeepConvNet
-from Model_Control.Models.DMTL_BCI import DMTL_BCI
-from Model_Control.Models.EEGNet import EEGNet
-from Model_Control.Models.EEGNet_fusion import EEGNet_fusion
-from Model_Control.Models.MIN2NET import MIN2NET
-from Model_Control.Models.MTVAE_standard import MTVAE
-from Model_Control.Models.MTVAE_with_loss import MTVAE_KL
-from Model_Control.Models.PST_attention import PST_attention
-from Model_Control.Models.ShallowConvNet import ShallowConvNet
-from Model_Control.Models.Shallownet_1conv2d import Shallownet_1conv2d
-from Model_Control.Models.Shallownet_1conv2d_rff import Shallownet_1conv2d_rff
-from Model_Control.Utils.Load_datasets import load_dataset
-from Model_Control.Utils.compile_model import getOptimizer
-from Model_Control.Utils.compile_model import get_callbacks
-from Model_Control.Utils.compile_model import get_loss
-from Model_Control.Utils.training_model import redirectToTrain
+from ..Models.DeepConvNet import DeepConvNet
+from ..Models.DMTL_BCI import DMTL_BCI
+from ..Models.EEGNet import EEGNet
+from ..Models.EEGNet_fusion import EEGNet_fusion
+from ..Models.MIN2NET import MIN2NET
+from ..Models.MTVAE_standard import MTVAE
+from ..Models.MTVAE_with_loss import MTVAE_KL
+from ..Models.PST_attention import PST_attention
+from ..Models.ShallowConvNet import ShallowConvNet
+from ..Models.Shallownet_1conv2d import Shallownet_1conv2d
+from ..Models.Shallownet_1conv2d_rff import Shallownet_1conv2d_rff
+from ..Utils.Load_datasets import load_dataset
+from ..Utils.compile_model import getOptimizer
+from ..Utils.compile_model import get_callbacks
+from ..Utils.compile_model import get_loss
+from ..Utils.training_model import redirectToTrain
 
 
 

@@ -53,17 +53,23 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
         if (validation_mode == None):
             if(callbacks == None):
                 ### ENTRENAMOS DE MANERA ESTANDAR
-                               
+                        
                 history = Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose)
                 preds = Model.predict(x_val)
-                acc = get_accuracy(preds,y_true,decimals=2)
+                if(autoencoder):
+                    acc = get_accuracy(preds[1],y_val[1],decimals=2)
+                else:
+                    acc = get_accuracy(preds,y_val,decimals=2)
                 return Model,history,acc
             else:
                 ### ENTRENAMOS DE MANERA ESTANDAR
-                               
+                        
                 history = Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks = callbacks)
                 preds = Model.predict(x_val)
-                acc = get_accuracy(preds,y_true,decimals=2)
+                if(autoencoder):
+                    acc = get_accuracy(preds[1],y_val[1],decimals=2)
+                else:
+                    acc = get_accuracy(preds,y_val,decimals=2)
                 return Model,history,acc
             
         else:
@@ -79,15 +85,14 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                 History = []
                 if validation_mode=='schirrmeister2017':
                     if(autoencoder):
-                         X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train[1], test_size=0.2,random_state=seed)
+                            X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train[1], test_size=0.2,random_state=seed)
                     else:
-                         X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train, test_size=0.2,random_state=seed)
+                            X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train, test_size=0.2,random_state=seed)
                     callbacks_names = [callbacks['early_stopping_train'],callbacks['checkpoint_train']]
-
                     if(autoencoder):
-                         history1 = Model.fit(X_tr,[X_tr,y_tr],validation_data=(X_ts,[X_ts,y_ts]),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
+                            history1 = Model.fit(X_tr,[X_tr,y_tr],validation_data=(X_ts,[X_ts,y_ts]),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
                     else:
-                         history1 = Model.fit(X_tr, y_tr,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
+                            history1 = Model.fit(X_tr, y_tr,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
                     History.append(history1)
                     stop_epoch= np.argmin(history1.history['val_loss'])
                     loss_stop = history1.history['loss'][stop_epoch]
@@ -109,9 +114,9 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
 
                     preds = Model.predict(x_val)
                     if(autoencoder):
-                      acc = get_accuracy(preds[1],y_val[1],decimals=2)
+                        acc = get_accuracy(preds[1],y_val[1],decimals=2)
                     else:
-                      acc = get_accuracy(preds,y_val,decimals=2)
+                        acc = get_accuracy(preds,y_val,decimals=2)
 
                     return Model, History , acc
 
@@ -123,7 +128,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                         X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train, test_size=0.2,random_state=seed)
                     
                     callbacks_names = [callbacks['early_stopping_train'],callbacks['checkpoint_train']]
-                  
+                
                     if(autoencoder):
                         history1 = Model.fit(X_tr, [X_tr,y_tr],validation_data=(X_ts, [X_ts,y_ts]),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
                     else:
@@ -135,9 +140,8 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     Model.load_weights(callbacks['checkpoint_train'].filepath)
                     callbacks['Threshold_valid'].threshold = loss_stop
                     callbacks['early_stopping_valid'].patience = (stop_epoch)*2
-                    callbacks_names = [callbacks['Threshold_valid'],callbacks['checkpoint_valid'],
-                               callbacks['early_stopping_valid']]
-                     
+                    callbacks_names = [callbacks['Threshold_valid'],callbacks['checkpoint_valid'],callbacks['early_stopping_valid']]
+                    
                     if(autoencoder):
                         history2= Model.fit(X_train,[X_train,Y_train[1]],validation_data=(X_ts, [X_ts,y_ts]),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names)
                     else:
@@ -167,14 +171,19 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
 
                     preds = Model.predict(x_val)
                     if(autoencoder):
-                       acc = get_accuracy(preds[1],y_val[1],decimals=2)
+                        acc = get_accuracy(preds[1],y_val[1],decimals=2)
                     else:
-                       acc = get_accuracy(preds,y_val,decimals=2)
+                        acc = get_accuracy(preds,y_val,decimals=2)
 
                     return Model, History, acc
 
                     
                 elif validation_mode=='lawhern2018':
+
+                    """
+                    NO ESTA ADECUADO PARA AUTOENCODERS
+                    ----------------------------------
+                    """
 
                     preds = []
                     y_true = []

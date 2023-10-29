@@ -272,7 +272,7 @@ class ModelControl():
         
      
 
-     def train_model(self,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,callbacks_names = None,call_args = None,validation_mode:str = None, batch_size:int =30,epochs:int = 100,verbose:int =1):
+     def train_model(self,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,callbacks_names = None,call_args = None,validation_mode:str = None, batch_size:int =30,epochs:int = 100,verbose:int =1,autoencoder = False):
          
          """
         Parameters
@@ -320,7 +320,7 @@ class ModelControl():
          if(Model == None):
             ### VERIFICAMOS EL MODELO PROPIO PARA SABER SI SE COMPILO
 
-            self.Model, History , acc=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose)
+            self.Model, History , acc=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,autoencoder=autoencoder)
                 
                 ## PARA CALCULAR EL ACCURRACY UNA VEZ LO TENGA CLARO HASTA ESTE PUNTO PROCEDEMOS A GENERAR ESE APARTADO
             return History,acc

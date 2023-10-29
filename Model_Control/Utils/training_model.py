@@ -20,7 +20,7 @@ def get_accuracy(preds,y_true,decimals=2):
     acc = np.mean(pred_labels==np.argmax(y_true,axis = -1 ))
     return np.round(acc*100,decimals=decimals)
 
-def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batchSize,epochs,verbose,seed = 20200220):
+def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batchSize,epochs,verbose,seed = 20200220,autoencoder=False):
         
         """
         Parameters
@@ -78,9 +78,16 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
             else:
                 History = []
                 if validation_mode=='schirrmeister2017':
-                    X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train, test_size=0.2,random_state=seed)
+                    if(autoencoder):
+                         X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train[1], test_size=0.2,random_state=seed)
+                    else:
+                         X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train, test_size=0.2,random_state=seed)
                     callbacks_names = [callbacks['early_stopping_train'],callbacks['checkpoint_train']]
-                    history1 = Model.fit(X_tr, y_tr,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
+
+                    if(autoencoder):
+                         history1 = Model.fit(X_tr,[X_tr,y_tr],validation_data=(X_ts,[X_ts,y_ts]),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
+                    else:
+                         history1 = Model.fit(X_tr, y_tr,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
                     History.append(history1)
                     stop_epoch= np.argmin(history1.history['val_loss'])
                     loss_stop = history1.history['loss'][stop_epoch]
@@ -93,25 +100,34 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     callbacks_names = [callbacks['Threshold_valid'],callbacks['checkpoint_valid'],
                                         callbacks['early_stopping_valid']]
 
-
-                    history2= Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names)
+                    if(autoencoder):
+                        history2= Model.fit(X_train,[X_train,Y_train[1]],validation_data=(x_val,[x_val,y_val[1]]),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names)
+                    else:
+                        history2= Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names)
                     History.append(history2)
                     Model.load_weights(callbacks['checkpoint_valid'].filepath)
 
                     preds = Model.predict(x_val)
-                    acc = get_accuracy(preds,y_val,decimals=2)
-                    
+                    if(autoencoder):
+                      acc = get_accuracy(preds[1],y_val[1],decimals=2)
+                    else:
+                      acc = get_accuracy(preds,y_val,decimals=2)
 
                     return Model, History , acc
 
 
                 elif validation_mode=='schirrmeister2017_legal':
-  
-                    X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train, test_size=0.2,random_state=seed)
+                    if(autoencoder):
+                        X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train[1], test_size=0.2,random_state=seed)
+                    else:
+                        X_tr, X_ts, y_tr, y_ts = train_test_split(X_train,Y_train, test_size=0.2,random_state=seed)
+                    
                     callbacks_names = [callbacks['early_stopping_train'],callbacks['checkpoint_train']]
-
-                    history1 = Model.fit(X_tr, y_tr,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
-
+                  
+                    if(autoencoder):
+                        history1 = Model.fit(X_tr, [X_tr,y_tr],validation_data=(X_ts, [X_ts,y_ts]),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
+                    else:
+                        history1 = Model.fit(X_tr, y_tr,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
                     History.append(history1)
                     stop_epoch= np.argmin(history1.history['val_loss'])
                     loss_stop = history1.history['loss'][stop_epoch]
@@ -121,13 +137,18 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     callbacks['early_stopping_valid'].patience = (stop_epoch)*2
                     callbacks_names = [callbacks['Threshold_valid'],callbacks['checkpoint_valid'],
                                callbacks['early_stopping_valid']]
-
-                    history2= Model.fit(X_train,Y_train,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names)
+                     
+                    if(autoencoder):
+                        history2= Model.fit(X_train,[X_train,Y_train[1]],validation_data=(X_ts, [X_ts,y_ts]),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names)
+                    else:
+                        history2= Model.fit(X_train,Y_train,validation_data=(X_ts, y_ts),batch_size=batchSize,epochs=(stop_epoch+1)*2,verbose=verbose,callbacks=callbacks_names)
                     History.append(history2)
                     Model.load_weights(callbacks['checkpoint_valid'].filepath)
                     preds = Model.predict(x_val)
-                    acc = get_accuracy(preds,y_val,decimals=2)
-
+                    if(autoencoder):
+                        acc = get_accuracy(preds[1],y_val[1],decimals=2)
+                    else:
+                        acc = get_accuracy(preds,y_val,decimals=2)
                     return Model, History , acc
 
                 elif validation_mode=='schirrmeister2021':
@@ -135,15 +156,20 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
 
                     callbacks_names = [callbacks['checkpoint_valid'],
                                         callbacks['early_stopping_valid']]
-
-                    history= Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
+                    
+                    if(autoencoder):
+                        history= Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
+                    else:
+                        history= Model.fit(X_train,Y_train,validation_data=(x_val,y_val),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
+                    
                     History.append(history)
-
                     Model.load_weights(callbacks['checkpoint_valid'].filepath)
 
                     preds = Model.predict(x_val)
-                    acc = get_accuracy(preds,y_val,decimals=2)
-
+                    if(autoencoder):
+                       acc = get_accuracy(preds[1],y_val[1],decimals=2)
+                    else:
+                       acc = get_accuracy(preds,y_val,decimals=2)
 
                     return Model, History, acc
 

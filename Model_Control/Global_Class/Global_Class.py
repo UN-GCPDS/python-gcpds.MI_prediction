@@ -253,6 +253,8 @@ class ModelControl():
                  self.opt = getOptimizer(optimizer)(learning_rate = lr) ## OBTENEMOS EL OPTIMIZADOR
                  self.metrics = metrics
                  self.loss = get_loss(loss_list)
+                 tf.keras.backend.clear_session()
+                 tf.random.set_seed(20200220)
                  self.Model.compile(loss=self.loss, optimizer= self.opt, metrics=self.metrics)
                  print("======================================")
                  print("MODELO COMPILADO EXITOSAMENTE")

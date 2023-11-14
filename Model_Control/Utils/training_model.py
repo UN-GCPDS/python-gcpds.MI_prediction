@@ -185,7 +185,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     acc = []
                     c = 0
 
-                    skf = StratifiedKFold(n_splits=2)
+                    skf = StratifiedKFold(n_splits=4)
                     print("data genial: ")
                     for train_index, test_index in skf.split(X_train, Y_train):
                         print("data: ",train_index, test_index)

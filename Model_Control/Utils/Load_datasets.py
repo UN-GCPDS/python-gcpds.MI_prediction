@@ -222,11 +222,11 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
                ### VERIFICAR ESTA BASE DE DATOS
                X_run_0 = X_session[index_run[0]:index_run[1],:,:,:]
                X_run_1 = X_session[index_run[2]:index_run[3],:,:,:]
-               X_run = np.concat((X_run_0,X_run_1),axis = 0) 
+               X_run = np.concatenate((X_run_0,X_run_1),axis = 0) 
 
                y_run_0 = y_session[index_run[0]:index_run[1]]
                y_run_1 = y_session[index_run[2]:index_run[3]]
-               y_run = np.concat((y_run_0,y_run_1),axis = 0)
+               y_run = np.concatenate((y_run_0,y_run_1),axis = 0)
                
                ### run por sesion
                X_s.append(X_run)

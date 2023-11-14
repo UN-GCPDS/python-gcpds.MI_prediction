@@ -196,7 +196,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
 
                         callbacks_names = [callbacks['early_stopping_train'+str(c+1)]]
 
-                        history= Model.fit(x_tr,y_tr,validation_data=(x_v, y_v),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
+                        history= Model.fit(x_tr,tf.keras.utils.to_categorical(y_tr,num_classes=2),validation_data=(x_v, tf.keras.utils.to_categorical(y_v,num_classes=2)),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
                         History.append(history)
 
                         Model.load_weights(callbacks['checkpoint_train'+str(c+1)].filepath)

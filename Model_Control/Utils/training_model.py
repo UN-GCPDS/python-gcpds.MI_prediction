@@ -8,12 +8,7 @@ def get_pred_labels(preds):
         
         pred_labels = np.argmax(preds,axis=-1)
         return pred_labels
-        # for i in range(0,preds.shape[0]):
-        #   # Encuentra el valor máximo en el arreglo
-        #   max_valor = np.max(preds[i,:])
-        #   # Crea un nuevo arreglo con 1 en la posición del valor máximo y 0 en las demás posiciones
-        #   preds[i,:] = np.where(preds[i,:] == max_valor, 1, 0)
-        # return preds
+
     
 def get_accuracy(preds,y_true,decimals=2):
     pred_labels = get_pred_labels(preds)
@@ -190,7 +185,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     acc = []
                     c = 0
 
-                    skf = StratifiedKFold(n_splits=4)
+                    skf = StratifiedKFold(n_splits=2)
 
                     for train_index, test_index in skf.split(X_train, Y_train):
 
@@ -205,11 +200,6 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                         History.append(history)
 
                         Model.load_weights(callbacks['checkpoint_train'+str(c+1)].filepath)
-
-                    #     if autoencoder:
-                    #         pred = self.predict(X_test)[-1]
-                    #     else:
-                    #         pred = self.predict(X_test)
                         pred = Model.predict(X_test_)
                         preds.append(pred)
                         y_preds = preds[c].argmax(axis = -1)

@@ -65,7 +65,7 @@ class DatasetControl():
          }
          sessions = {
             'BNCI2014001':['1test','0train'],
-            'Cho2017':['session_0']
+            'Cho2017':['0']
          }
 
 

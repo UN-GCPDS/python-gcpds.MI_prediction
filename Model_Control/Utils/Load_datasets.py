@@ -199,11 +199,11 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
         if(dataset_name == 'Cho2017'):
            
            runs_index={
-             'run_0':[0,20,100,120],
-             'run_1':[20,40,120,140],
-             'run_2':[40,60,140,160],
-             'run_3':[60,80,160,180],
-             'run_4':[80,100,180,200]
+             '0':[0,20,100,120],
+             '1':[20,40,120,140],
+             '2':[40,60,140,160],
+             '3':[60,80,160,180],
+             '4':[80,100,180,200]
            }
            ### CON GIGA NECESITAMOS UN PROCESO DIFERENTE
            ### PRIMERO CARGAMOS TODA LA BASE DE DATOS

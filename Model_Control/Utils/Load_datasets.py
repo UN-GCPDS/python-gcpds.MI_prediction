@@ -42,7 +42,7 @@ def getSessionsRuns(datasetName):
 
          runs = {
          'BNCI2014001':['0', '1', '2', '3', '4', '5'],
-         'Cho2017':['run_0','run_1','run_2','run_3','run_4'],
+         'Cho2017':['0','1','2','3','4'],
          }
          sessions = {
             'BNCI2014001':['1test', '0train'],

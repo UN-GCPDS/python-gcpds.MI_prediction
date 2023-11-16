@@ -39,7 +39,7 @@ def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode):
 
                 preds = np.concatenate(preds,axis=0)
                 y_true = np.concatenate(y_true,axis=0)
-                acc = get_accuracy(preds,y_true,decimals=2)
+                acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
                 return acc
             else:
                  return 'otros métodos de validación no han sido implementados'

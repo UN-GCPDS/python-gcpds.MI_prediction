@@ -15,6 +15,35 @@ def get_accuracy(preds,y_true,decimals=2):
     acc = np.mean(pred_labels==np.argmax(y_true,axis = -1 ))
     return np.round(acc*100,decimals=decimals)
 
+
+def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode):
+            if(validation_mode == 'lawhern2018'):
+                preds = []
+                y_true = []
+                acc = []
+                c = 0
+
+                skf = StratifiedKFold(n_splits=4)
+
+                for train_index, test_index in skf.split(X_train, Y_train):
+
+                    ____, X_test_ = X_train[train_index], X_train[test_index]
+                    ____, y_test_ = Y_train[train_index], Y_train[test_index]
+                    pred = Model.predict(X_test_)
+                    preds.append(pred)
+                    y_preds = preds[c].argmax(axis = -1)
+                    y_true.append(y_test_)
+                    acc.append(np.mean(y_preds == y_test_))
+                    print("Fold %d Classification accuracy: %f " % (c+1,acc[c]))
+                    c += 1
+
+                preds = np.concatenate(preds,axis=0)
+                y_true = np.concatenate(y_true,axis=0)
+                acc = get_accuracy(preds,y_true,decimals=2)
+                return acc
+            else:
+                 return 'otros métodos de validación no han sido implementados'
+
 def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batchSize,epochs,verbose,seed = 20200220,autoencoder=False):
         
         """

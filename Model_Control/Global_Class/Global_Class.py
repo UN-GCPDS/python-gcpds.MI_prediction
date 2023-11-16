@@ -14,7 +14,7 @@ from ..Utils.Load_datasets import load_dataset
 from ..Utils.compile_model import getOptimizer
 from ..Utils.compile_model import get_callbacks
 from ..Utils.compile_model import get_loss
-from ..Utils.training_model import redirectToTrain
+from ..Utils.training_model import redirectToTrain,calAccuracy
 
 
 
@@ -275,6 +275,50 @@ class ModelControl():
                  print("======================================")
         
      
+     def accuracy_model(self,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,validation_mode:str = None,autoencoder = False):
+         
+                """
+                Parameters
+                ------------------------------------------
+                Model : tensorFlowModel
+                    model of tensorFlow compiled
+                callbacks : 
+                    callbacks for train the model defined by the function of get_callbacks
+                X_train : array
+                    input training array data
+                Y_train : array
+                    target training array data
+                x_val : array
+                    input validation array data
+                y_val : array
+                    target validation array data
+                
+                validation_mode:str default None : 
+                    strategy of validation if validation_mode is None, the validation strategy is the conventional just comparing
+                    the training and validation data during one training. 
+                batch_size : int 
+                    segmentation of the training data during training.
+                epochs : int 
+                    number of epochs to train the model
+                verbose : int [0,1]
+                    option during training to watch the description of the training. 0 didn't print anything and 1 print all the information
+                
+                Return
+                ---------------------------------------------------------
+                History: could be a list or a object with the information of each training for the selected model
+                X_val : input data to evaluate the model
+                y_val : target data for evaluate the model
+                """
+                if (X_train==None or Y_train==None or x_val==None or y_val==None or validation_mode == None):
+                    print("==============================")
+                    print("=======FALTAN PARAMETROS======")
+                    print("==============================")
+                    print("\n")
+                    print("X_train,Y_train,x_val,y_val,validation_mode")
+                    print("\n")
+                if(Model != None):
+                    acc=calAccuracy(self.Model,X_train,Y_train,x_val,y_val,validation_mode)
+                    return acc
 
      def train_model(self,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,callbacks_names = None,call_args = None,validation_mode:str = None, batch_size:int =30,epochs:int = 100,verbose:int =1,autoencoder = False):
          

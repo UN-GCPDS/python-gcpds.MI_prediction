@@ -275,7 +275,7 @@ class ModelControl():
                  print("======================================")
         
      
-     def accuracy_model(self,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,validation_mode:str = None,autoencoder = False):
+     def accuracy_model(self,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,validation_mode:str = None,autoencoder = False,list_paths=None):
          
                 """
                 Parameters
@@ -314,10 +314,10 @@ class ModelControl():
                     print("=======FALTAN PARAMETROS======")
                     print("==============================")
                     print("\n")
-                    print("X_train,Y_train,x_val,y_val,validation_mode")
+                    print("X_train,Y_train,x_val,y_val,validation_mode,list_paths")
                     print("\n")
                 if(Model != None):
-                    acc=calAccuracy(self.Model,X_train,Y_train,x_val,y_val,validation_mode)
+                    acc=calAccuracy(self.Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths)
                     return acc
 
      def train_model(self,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,callbacks_names = None,call_args = None,validation_mode:str = None, batch_size:int =30,epochs:int = 100,verbose:int =1,autoencoder = False):

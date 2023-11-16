@@ -16,7 +16,7 @@ def get_accuracy(preds,y_true,decimals=2):
     return np.round(acc*100,decimals=decimals)
 
 
-def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode):
+def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths):
             if(validation_mode == 'lawhern2018'):
                 preds = []
                 y_true = []
@@ -29,6 +29,8 @@ def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode):
 
                     ____, X_test_ = X_train[train_index], X_train[test_index]
                     ____, y_test_ = Y_train[train_index], Y_train[test_index]
+                    ### cargamos los pesos
+                    Model.load_weights(list_paths[c])
                     pred = Model.predict(X_test_)
                     preds.append(pred)
                     y_preds = preds[c].argmax(axis = -1)

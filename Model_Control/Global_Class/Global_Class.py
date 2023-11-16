@@ -309,13 +309,13 @@ class ModelControl():
                 X_val : input data to evaluate the model
                 y_val : target data for evaluate the model
                 """
-                if (X_train==None or Y_train==None or x_val==None or y_val==None or validation_mode == None):
-                    print("==============================")
-                    print("=======FALTAN PARAMETROS======")
-                    print("==============================")
-                    print("\n")
-                    print("X_train,Y_train,x_val,y_val,validation_mode,list_paths")
-                    print("\n")
+                # if (X_train==None or Y_train==None or x_val==None or y_val==None or validation_mode == None):
+                #     print("==============================")
+                #     print("=======FALTAN PARAMETROS======")
+                #     print("==============================")
+                #     print("\n")
+                #     print("X_train,Y_train,x_val,y_val,validation_mode,list_paths")
+                #     print("\n")
                 if(Model != None):
                     acc=calAccuracy(self.Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths)
                     return acc

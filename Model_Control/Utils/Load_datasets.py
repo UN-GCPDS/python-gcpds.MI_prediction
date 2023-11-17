@@ -203,7 +203,6 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
 
     else: 
         if(dataset_name == 'Cho2017'):
-           print("2 :",session_run)
            runs_index={
              '0':[0,20,100,120],
              '1':[20,40,120,140],

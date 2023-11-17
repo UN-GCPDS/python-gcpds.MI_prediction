@@ -226,7 +226,7 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
                 session_run = getSessionsRuns(dataset_name,sbj_id=subject_id)
                 print("3 :",session_run)
                 sesion = session_run['sessions'][0]
-                runs = Sessions_Runs['runs']
+                runs = session_run['runs']
                 X_session,y_session = get_epochs(splitted[sesion])
                 X_s = []
                 y_s = []

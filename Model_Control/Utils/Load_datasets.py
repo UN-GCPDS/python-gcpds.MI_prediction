@@ -37,7 +37,7 @@ def get_classes(X,y, class_names):
     y_c = np.concatenate(y_c,axis=0)
     return X_c, y_c
 
-def getSessionsRuns(datasetName):
+def getSessionsRuns(datasetName,sbj_id:int = None):
          
 
          runs = {
@@ -48,7 +48,13 @@ def getSessionsRuns(datasetName):
             'BNCI2014001':['1test', '0train'],
             'Cho2017':['0']
          }
-
+         
+         runs_7 = {
+         'BNCI2014001':['0', '1', '2', '3', '4', '5'],
+         'Cho2017':['0','1','2','3','4','5'],
+         }
+         if (sbj_id != None):
+            return {'sessions':sessions[datasetName],'runs':runs_7[datasetName]}
 
          return {'sessions':sessions[datasetName],'runs':runs[datasetName]}
 
@@ -205,38 +211,81 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
              '3':[60,80,160,180],
              '4':[80,100,180,200]
            }
-           ### CON GIGA NECESITAMOS UN PROCESO DIFERENTE
-           ### PRIMERO CARGAMOS TODA LA BASE DE DATOS
-           splitted = windows_dataset.split('session')
-           session_run = getSessionsRuns(dataset_name)
-           sesion = session_run['sessions'][0]
-           runs = Sessions_Runs['runs']
-           X_session,y_session = get_epochs(splitted[sesion])
-           X_s = []
-           y_s = []
-           X = []
-           y = []
-           for run in runs:
+           runs_index_7={
+             '0':[0,20,120,140],
+             '1':[20,40,140,160],
+             '2':[40,60,160,180],
+             '3':[60,80,200,220],
+             '4':[80,100,220,240],
+             '5':[100,120,240,260],
+           }
+           if(subject_id == 7 or subject_id == 8):
+                ### CON GIGA NECESITAMOS UN PROCESO DIFERENTE
+                ### PRIMERO CARGAMOS TODA LA BASE DE DATOS
+                splitted = windows_dataset.split('session')
+                session_run = getSessionsRuns(dataset_name,sbj_id=subject_id)
+                sesion = session_run['sessions'][0]
+                runs = Sessions_Runs['runs']
+                X_session,y_session = get_epochs(splitted[sesion])
+                X_s = []
+                y_s = []
+                X = []
+                y = []
+                for run in runs:
+                    
+                    index_run = runs_index[run]
+                    ### VERIFICAR ESTA BASE DE DATOS
+                    X_run_0 = X_session[index_run[0]:index_run[1],:,:,:]
+                    X_run_1 = X_session[index_run[2]:index_run[3],:,:,:]
+                    X_run = np.concatenate((X_run_0,X_run_1),axis = 0) 
+
+                    y_run_0 = y_session[index_run[0]:index_run[1]]
+                    y_run_1 = y_session[index_run[2]:index_run[3]]
+                    y_run = np.concatenate((y_run_0,y_run_1),axis = 0)
+                    
+                    ### run por sesion
+                    X_s.append(X_run)
+                    y_s.append(y_run)
+                
+
+                X.append(X_s)
+                y.append(y_s)
+
+                return np.array(X),np.array(y),sfreq
+           else:
                
-               index_run = runs_index[run]
-               ### VERIFICAR ESTA BASE DE DATOS
-               X_run_0 = X_session[index_run[0]:index_run[1],:,:,:]
-               X_run_1 = X_session[index_run[2]:index_run[3],:,:,:]
-               X_run = np.concatenate((X_run_0,X_run_1),axis = 0) 
+                ### CON GIGA NECESITAMOS UN PROCESO DIFERENTE
+                ### PRIMERO CARGAMOS TODA LA BASE DE DATOS
+                splitted = windows_dataset.split('session')
+                session_run = getSessionsRuns(dataset_name)
+                sesion = session_run['sessions'][0]
+                runs = Sessions_Runs['runs']
+                X_session,y_session = get_epochs(splitted[sesion])
+                X_s = []
+                y_s = []
+                X = []
+                y = []
+                for run in runs:
+                    
+                    index_run = runs_index[run]
+                    ### VERIFICAR ESTA BASE DE DATOS
+                    X_run_0 = X_session[index_run[0]:index_run[1],:,:,:]
+                    X_run_1 = X_session[index_run[2]:index_run[3],:,:,:]
+                    X_run = np.concatenate((X_run_0,X_run_1),axis = 0) 
 
-               y_run_0 = y_session[index_run[0]:index_run[1]]
-               y_run_1 = y_session[index_run[2]:index_run[3]]
-               y_run = np.concatenate((y_run_0,y_run_1),axis = 0)
-               
-               ### run por sesion
-               X_s.append(X_run)
-               y_s.append(y_run)
-           
+                    y_run_0 = y_session[index_run[0]:index_run[1]]
+                    y_run_1 = y_session[index_run[2]:index_run[3]]
+                    y_run = np.concatenate((y_run_0,y_run_1),axis = 0)
+                    
+                    ### run por sesion
+                    X_s.append(X_run)
+                    y_s.append(y_run)
+                
 
-           X.append(X_s)
-           y.append(y_s)
+                X.append(X_s)
+                y.append(y_s)
 
-           return np.array(X),np.array(y),sfreq
+                return np.array(X),np.array(y),sfreq
 
            
 

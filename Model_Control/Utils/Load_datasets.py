@@ -144,7 +144,7 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
     ##CARGAMOS LA BASE DE DATOS
     dataset = MOABBDataset(dataset_name=dataset_name, subject_ids=[subject_id]) ## CARGAMOS LA BASE DE DATOS
 
-    
+    print("SUJETO :",subject_id)
     # Parameters for exponential moving standardization
     
     ##Obtenemos los canales de la base de datos
@@ -181,13 +181,13 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
     )
 
     if (Sessions_Runs == None):
-
+        
         ### EN ESTE CASO OBTENEMOS TODAS LAS SESSIONES Y TODOS LOS RUNS
 
         splitted = windows_dataset.split('session')
         session_run = getSessionsRuns(dataset_name)
         sessions = session_run['sessions']
-        
+        print("1 :",session_run)
         X = []
         y = []
         for sesion in sessions:
@@ -203,7 +203,7 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
 
     else: 
         if(dataset_name == 'Cho2017'):
-           
+           print("2 :",session_run)
            runs_index={
              '0':[0,20,100,120],
              '1':[20,40,120,140],
@@ -220,10 +220,12 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
              '5':[100,120,240,260],
            }
            if(subject_id == 7 or subject_id == 9):
+                
                 ### CON GIGA NECESITAMOS UN PROCESO DIFERENTE
                 ### PRIMERO CARGAMOS TODA LA BASE DE DATOS
                 splitted = windows_dataset.split('session')
                 session_run = getSessionsRuns(dataset_name,sbj_id=subject_id)
+                print("3 :",session_run)
                 sesion = session_run['sessions'][0]
                 runs = Sessions_Runs['runs']
                 X_session,y_session = get_epochs(splitted[sesion])

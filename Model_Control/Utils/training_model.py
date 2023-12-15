@@ -16,33 +16,61 @@ def get_accuracy(preds,y_true,decimals=2):
     return np.round(acc*100,decimals=decimals)
 
 
-def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths):
+def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,autoencoder):
             if(validation_mode == 'lawhern2018'):
-                preds = []
-                y_true = []
-                acc = []
-                c = 0
 
-                skf = StratifiedKFold(n_splits=4)
+                if(autoencoder):
+                    preds = []
+                    y_true = []
+                    acc = []
+                    c = 0
 
-                for train_index, test_index in skf.split(X_train, Y_train):
+                    skf = StratifiedKFold(n_splits=4)
 
-                    ____, X_test_ = X_train[train_index], X_train[test_index]
-                    ____, y_test_ = Y_train[train_index], Y_train[test_index]
-                    ### cargamos los pesos
-                    Model.load_weights(list_paths[c])
-                    pred = Model.predict(X_test_)
-                    preds.append(pred)
-                    y_preds = preds[c].argmax(axis = -1)
-                    y_true.append(y_test_)
-                    acc.append(np.mean(y_preds == y_test_))
-                    print("Fold %d Classification accuracy: %f " % (c+1,acc[c]))
-                    c += 1
+                    for train_index, test_index in skf.split(X_train, Y_train[1]):
 
-                preds = np.concatenate(preds,axis=0)
-                y_true = np.concatenate(y_true,axis=0)
-                acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
-                return acc
+                        ____, X_test_ = X_train[train_index], X_train[test_index]
+                        ____, y_test_ = Y_train[1][train_index], Y_train[1][test_index]
+                        ### cargamos los pesos
+                        Model.load_weights(list_paths[c])
+                        pred = Model.predict(X_test_)
+                        preds.append(pred[1])
+                        y_preds = preds[c].argmax(axis = -1)
+                        y_true.append(y_test_)
+                        acc.append(np.mean(y_preds == y_test_))
+                        print("Fold %d Classification accuracy: %f " % (c+1,acc[c]))
+                        c += 1
+
+                    preds = np.concatenate(preds,axis=0)
+                    y_true = np.concatenate(y_true,axis=0)
+                    acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
+                    return acc
+                else:
+                    preds = []
+                    y_true = []
+                    acc = []
+                    c = 0
+
+                    skf = StratifiedKFold(n_splits=4)
+
+                    for train_index, test_index in skf.split(X_train, Y_train):
+
+                        ____, X_test_ = X_train[train_index], X_train[test_index]
+                        ____, y_test_ = Y_train[train_index], Y_train[test_index]
+                        ### cargamos los pesos
+                        Model.load_weights(list_paths[c])
+                        pred = Model.predict(X_test_)
+                        preds.append(pred)
+                        y_preds = preds[c].argmax(axis = -1)
+                        y_true.append(y_test_)
+                        acc.append(np.mean(y_preds == y_test_))
+                        print("Fold %d Classification accuracy: %f " % (c+1,acc[c]))
+                        c += 1
+
+                    preds = np.concatenate(preds,axis=0)
+                    y_true = np.concatenate(y_true,axis=0)
+                    acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
+                    return acc
             else:
                  return 'otros métodos de validación no han sido implementados'
 

@@ -222,8 +222,8 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     if(autoencoder):
                         for train_index, test_index in skf.split(X_train, Y_train[1]):
                             print("data: ",train_index, test_index)
-                            X_train_, X_test_ = X_train[train_index], X_train[1][test_index]
-                            y_train_, y_test_ = Y_train[train_index], Y_train[1][test_index]
+                            X_train_, X_test_ = X_train[train_index], X_train[test_index]
+                            y_train_, y_test_ = Y_train[1][train_index], Y_train[1][test_index]
 
                             x_tr, x_v, y_tr, y_v = train_test_split(X_train_, y_train_, test_size=0.3,random_state=seed)
 

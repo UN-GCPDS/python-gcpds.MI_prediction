@@ -31,6 +31,7 @@ class DatasetControl():
      datasets = {
          'GIGA':'Cho2017',
          'BCI2A':'BNCI2014001',
+         'PhysionetMI':'PhysionetMI'
      }
     
      def __init__(self,DatasetName:str='BCI2A'): 
@@ -62,10 +63,12 @@ class DatasetControl():
          runs = {
          'BNCI2014001':['0', '1', '2', '3', '4', '5'],
          'Cho2017':['0','1','2','3','4'],
+         'PhysionetMI':['0','1','2','3','4','5']
          }
          sessions = {
             'BNCI2014001':['1test','0train'],
-            'Cho2017':['0']
+            'Cho2017':['0'],
+            'PhysionetMI':['0']
          }
 
 

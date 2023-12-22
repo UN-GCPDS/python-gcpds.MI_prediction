@@ -43,15 +43,19 @@ def getSessionsRuns(datasetName,sbj_id:int = None):
          runs = {
          'BNCI2014001':['0', '1', '2', '3', '4', '5'],
          'Cho2017':['0','1','2','3','4'],
+         'PhysionetMI':['0','1','2','3','4','5'],
+
          }
          sessions = {
             'BNCI2014001':['1test', '0train'],
-            'Cho2017':['0']
+            'Cho2017':['0'],
+            'PhysionetMI':['0']
          }
          
          runs_7 = {
          'BNCI2014001':['0', '1', '2', '3', '4', '5'],
          'Cho2017':['0','1','2','3','4','5'],
+         'PhysionetMI':['0','1','2','3','4','5']
          }
          if (sbj_id != None):
             return {'sessions':sessions[datasetName],'runs':runs_7[datasetName]}
@@ -87,7 +91,7 @@ def getChannels(dataset_name:str):
     Parameters
     ----------
     dataset_name : str
-        [Cho2017,BNCI2014001]
+        [Cho2017,BNCI2014001,PhysionetMI]
     """
     ##JUST EEG CHANNELS
 
@@ -103,6 +107,11 @@ def getChannels(dataset_name:str):
         'BNCI2014001': [
         "Fz", "FC3", "FC1", "FCz", "FC2", "FC4", "C5", "C3", "C1", "Cz", "C2",
         "C4", "C6", "CP3", "CP1", "CPz", "CP2", "CP4", "P1", "Pz", "P2", "POz"
+        ],
+        'PhysionetMI':["Fp1","Fp2","F3","F4","C3","C4","P3","P4","O1","O2",
+                       "F7","F8","T3","T4","T5","T6","Fz","Cz","Pz","A1","A2","P7","P8","Fpz","Iz","PO7","PO8","FT7","FT8","TP7","TP8",
+                       "F5","F6","T7","T8","M1","M2","F9","F10","C5","C6","P5",
+                       "P6","O5","O6",
         ]
     }
 
@@ -170,15 +179,25 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
     assert all([ds.raw.info['sfreq'] == sfreq for ds in dataset.datasets])
     # Calculate the trial start offset in samples.
     trial_start_offset_samples = int(trial_start_offset_seconds * sfreq)
+    
+    try:
+        # Create windows using braindecode function for this. It needs parameters to define how
+        # trials should be used.
+        windows_dataset = create_windows_from_events(
+            dataset,
+            trial_start_offset_samples=trial_start_offset_samples,
+            trial_stop_offset_samples=int(trial_stop_offset_seconds*sfreq),
+            preload=True,
+        )
 
-    # Create windows using braindecode function for this. It needs parameters to define how
-    # trials should be used.
-    windows_dataset = create_windows_from_events(
-        dataset,
-        trial_start_offset_samples=trial_start_offset_samples,
-        trial_stop_offset_samples=int(trial_stop_offset_seconds*sfreq),
-        preload=True,
-    )
+
+    except Exception as e:
+        
+        return 'Trials no simetricos','Trials no simetricos','Trials no simetricos' 
+
+    
+    
+    
 
     if (Sessions_Runs == None):
         
@@ -187,7 +206,6 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
         splitted = windows_dataset.split('session')
         session_run = getSessionsRuns(dataset_name)
         sessions = session_run['sessions']
-        print("1 :",session_run)
         X = []
         y = []
         for sesion in sessions:
@@ -253,7 +271,7 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
                 y.append(y_s)
 
                 return np.array(X),np.array(y),sfreq
-           else:
+           elif(dataset_name == 'BNCI2014001'):
                
                 ### CON GIGA NECESITAMOS UN PROCESO DIFERENTE
                 ### PRIMERO CARGAMOS TODA LA BASE DE DATOS
@@ -288,13 +306,21 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
 
                 return np.array(X),np.array(y),sfreq
 
-           
-
+           else:
+               ## PHYSIONET CON TODOS LOS RUNS
+               splitted = windows_dataset.split('session')
+               ## incluido el resting
+               ## CARGAMOS LA SESION CERO
+               X_s,y_s = get_epochs(splitted['0'])
+               X = []
+               y = []
+               X.append(X_s)
+               y.append(y_s)
+               return np.array(X),np.array(y),sfreq
 
         else:
             sesiones_objetivo = Sessions_Runs['sessions']
             runs_objetivo = Sessions_Runs['runs']
-
             ### PRIMERO OBTENEMOS UN DICTIONARIO SEPARADO POR SESSIONES
             splitted = windows_dataset.split('session')
             ### POR CADA SESSION SEPARAMOS POR RUNS
@@ -320,7 +346,6 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
                     y_sesion.append(y_run)
                 X.append(x_sesion)
                 y.append(y_sesion)
-            
             return np.array(X),np.array(y),sfreq
 
 

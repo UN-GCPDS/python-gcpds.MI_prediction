@@ -298,7 +298,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
 
                         preds = np.concatenate(preds,axis=0)
                         y_true = np.concatenate(y_true,axis=0)
-                        acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
+                        acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=len(np.unique(Y_train))),decimals=2)
 
                         return Model,History,acc
 

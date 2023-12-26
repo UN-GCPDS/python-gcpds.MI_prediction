@@ -271,7 +271,40 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
                 y.append(y_s)
 
                 return np.array(X),np.array(y),sfreq
-           elif(dataset_name == 'BNCI2014001'):
+        
+        
+           else:
+            sesiones_objetivo = Sessions_Runs['sessions']
+            runs_objetivo = Sessions_Runs['runs']
+            ### PRIMERO OBTENEMOS UN DICTIONARIO SEPARADO POR SESSIONES
+            splitted = windows_dataset.split('session')
+            ### POR CADA SESSION SEPARAMOS POR RUNS
+            dictionary_dataset = {}
+            for sesion in sesiones_objetivo:
+                list_runs = []
+                dataset_runs = splitted[sesion].split('run')
+                for run in runs_objetivo:
+                    list_runs.append(dataset_runs[run]) ## AGREGAMOS EL RUN CORRESPONDIENTE
+                
+                dictionary_dataset[sesion] = list_runs ## GUARDAMOS LA LISTA CON CADA RUN
+            
+            ### ORGANIZAMOS CADA UNA DE LAS BASES DE DATOS
+            X = []
+            y = []
+            for sesion in sesiones_objetivo:
+                x_sesion = []
+                y_sesion = []
+                for run in range(0,len(dictionary_dataset[sesion])):
+                    ## OBTENEMOS LOS DATOS DE CADA RUN SEPARADO YA EN ETIQUETA Y LABEL
+                    x_run,y_run = get_epochs(dictionary_dataset[sesion][run])
+                    x_sesion.append(x_run)
+                    y_sesion.append(y_run)
+                X.append(x_sesion)
+                y.append(y_sesion)
+            return np.array(X),np.array(y),sfreq
+           
+           
+        elif(dataset_name == 'BNCI2014001'):
                
                 ### CON GIGA NECESITAMOS UN PROCESO DIFERENTE
                 ### PRIMERO CARGAMOS TODA LA BASE DE DATOS
@@ -306,7 +339,7 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
 
                 return np.array(X),np.array(y),sfreq
 
-           else:
+        else:
                ## PHYSIONET CON TODOS LOS RUNS
                splitted = windows_dataset.split('session')
                ## incluido el resting
@@ -318,35 +351,7 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
                y.append(y_s)
                return np.array(X),np.array(y),sfreq
 
-        else:
-            sesiones_objetivo = Sessions_Runs['sessions']
-            runs_objetivo = Sessions_Runs['runs']
-            ### PRIMERO OBTENEMOS UN DICTIONARIO SEPARADO POR SESSIONES
-            splitted = windows_dataset.split('session')
-            ### POR CADA SESSION SEPARAMOS POR RUNS
-            dictionary_dataset = {}
-            for sesion in sesiones_objetivo:
-                list_runs = []
-                dataset_runs = splitted[sesion].split('run')
-                for run in runs_objetivo:
-                    list_runs.append(dataset_runs[run]) ## AGREGAMOS EL RUN CORRESPONDIENTE
-                
-                dictionary_dataset[sesion] = list_runs ## GUARDAMOS LA LISTA CON CADA RUN
-            
-            ### ORGANIZAMOS CADA UNA DE LAS BASES DE DATOS
-            X = []
-            y = []
-            for sesion in sesiones_objetivo:
-                x_sesion = []
-                y_sesion = []
-                for run in range(0,len(dictionary_dataset[sesion])):
-                    ## OBTENEMOS LOS DATOS DE CADA RUN SEPARADO YA EN ETIQUETA Y LABEL
-                    x_run,y_run = get_epochs(dictionary_dataset[sesion][run])
-                    x_sesion.append(x_run)
-                    y_sesion.append(y_run)
-                X.append(x_sesion)
-                y.append(y_sesion)
-            return np.array(X),np.array(y),sfreq
+        
 
 
 

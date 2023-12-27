@@ -277,7 +277,7 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
             ### CON GIGA NECESITAMOS UN PROCESO DIFERENTE
                 ### PRIMERO CARGAMOS TODA LA BASE DE DATOS
                 splitted = windows_dataset.split('session')
-                session_run = getSessionsRuns(dataset_name,sbj_id=subject_id)
+                session_run = getSessionsRuns(dataset_name)
                 print("3 :",session_run)
                 sesion = session_run['sessions'][0] ### obtenemos la sesión 0
                 runs = session_run['runs'] ### OBTENEMOS CADA RUN

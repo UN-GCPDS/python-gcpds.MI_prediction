@@ -237,19 +237,19 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
              '5':[100,120,220,240],
            }
            if(subject_id == 7 or subject_id == 9):
-                
                 ### CON GIGA NECESITAMOS UN PROCESO DIFERENTE
                 ### PRIMERO CARGAMOS TODA LA BASE DE DATOS
                 splitted = windows_dataset.split('session')
                 session_run = getSessionsRuns(dataset_name,sbj_id=subject_id)
                 print("3 :",session_run)
-                sesion = session_run['sessions'][0]
-                runs = session_run['runs']
-                X_session,y_session = get_epochs(splitted[sesion])
+                sesion = session_run['sessions'][0] ### obtenemos la sesión 0
+                runs = session_run['runs'] ### OBTENEMOS CADA RUN
+                X_session,y_session = get_epochs(splitted[sesion])### OBTENEMOS LA BASE DE DATOS COMPLETA DE LA SESION DETERMINADA
                 X_s = []
                 y_s = []
                 X = []
                 y = []
+                #### SEGMENTAMOS POR CADA UNO DE LOS RUN CON LOS INDICES DETERMINAMOS
                 for run in runs:
                     
                     index_run = runs_index_7[run]
@@ -274,34 +274,40 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
         
         
            else:
-            sesiones_objetivo = Sessions_Runs['sessions']
-            runs_objetivo = Sessions_Runs['runs']
-            ### PRIMERO OBTENEMOS UN DICTIONARIO SEPARADO POR SESSIONES
-            splitted = windows_dataset.split('session')
-            ### POR CADA SESSION SEPARAMOS POR RUNS
-            dictionary_dataset = {}
-            for sesion in sesiones_objetivo:
-                list_runs = []
-                dataset_runs = splitted[sesion].split('run')
-                for run in runs_objetivo:
-                    list_runs.append(dataset_runs[run]) ## AGREGAMOS EL RUN CORRESPONDIENTE
+            ### CON GIGA NECESITAMOS UN PROCESO DIFERENTE
+                ### PRIMERO CARGAMOS TODA LA BASE DE DATOS
+                splitted = windows_dataset.split('session')
+                session_run = getSessionsRuns(dataset_name,sbj_id=subject_id)
+                print("3 :",session_run)
+                sesion = session_run['sessions'][0] ### obtenemos la sesión 0
+                runs = session_run['runs'] ### OBTENEMOS CADA RUN
+                X_session,y_session = get_epochs(splitted[sesion])### OBTENEMOS LA BASE DE DATOS COMPLETA DE LA SESION DETERMINADA
+                X_s = []
+                y_s = []
+                X = []
+                y = []
+                #### SEGMENTAMOS POR CADA UNO DE LOS RUN CON LOS INDICES DETERMINAMOS
+                for run in runs:
+                    
+                    index_run = runs_index[run]
+                    ### VERIFICAR ESTA BASE DE DATOS
+                    X_run_0 = X_session[index_run[0]:index_run[1],:,:,:]
+                    X_run_1 = X_session[index_run[2]:index_run[3],:,:,:]
+                    X_run = np.concatenate((X_run_0,X_run_1),axis = 0) 
+
+                    y_run_0 = y_session[index_run[0]:index_run[1]]
+                    y_run_1 = y_session[index_run[2]:index_run[3]]
+                    y_run = np.concatenate((y_run_0,y_run_1),axis = 0)
+                    
+                    ### run por sesion
+                    X_s.append(X_run)
+                    y_s.append(y_run)
                 
-                dictionary_dataset[sesion] = list_runs ## GUARDAMOS LA LISTA CON CADA RUN
-            
-            ### ORGANIZAMOS CADA UNA DE LAS BASES DE DATOS
-            X = []
-            y = []
-            for sesion in sesiones_objetivo:
-                x_sesion = []
-                y_sesion = []
-                for run in range(0,len(dictionary_dataset[sesion])):
-                    ## OBTENEMOS LOS DATOS DE CADA RUN SEPARADO YA EN ETIQUETA Y LABEL
-                    x_run,y_run = get_epochs(dictionary_dataset[sesion][run])
-                    x_sesion.append(x_run)
-                    y_sesion.append(y_run)
-                X.append(x_sesion)
-                y.append(y_sesion)
-            return np.array(X),np.array(y),sfreq
+
+                X.append(X_s)
+                y.append(y_s)
+
+                return np.array(X),np.array(y),sfreq
            
            
         elif(dataset_name == 'BNCI2014001'):

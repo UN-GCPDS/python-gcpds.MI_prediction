@@ -346,16 +346,20 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
                 return np.array(X),np.array(y),sfreq
 
         else:
-               ## PHYSIONET CON TODOS LOS RUNS
-               splitted = windows_dataset.split('session')
-               ## incluido el resting
-               ## CARGAMOS LA SESION CERO
-               X_s,y_s = get_epochs(splitted['0'])
-               X = []
-               y = []
-               X.append(X_s)
-               y.append(y_s)
-               return np.array(X),np.array(y),sfreq
+                ## PHYSIONET CON TODOS LOS RUNS
+                splitted = windows_dataset.split('run')
+                ## incluido el resting
+                session_run = getSessionsRuns(dataset_name)
+                runs = Sessions_Runs['runs']
+                ## iteramos por cada run
+                X = []
+                y = []
+                for run in runs:
+                    ## CARGAMOS LA SESION CERO
+                    X_s,y_s = get_epochs(splitted[run])
+                    X.append(X_s)
+                    y.append(y_s)
+                return np.array(X),np.array(y),sfreq
 
         
 

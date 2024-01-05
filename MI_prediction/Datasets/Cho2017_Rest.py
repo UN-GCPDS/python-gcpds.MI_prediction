@@ -16,7 +16,7 @@ class Cho2017_Rest(BaseDataset):
             subjects=list(range(1, 53)),
             sessions_per_subject=1,
             events=dict(rest=1),
-            code="Cho2017_Rest",
+            code="Cho2017Rest",
             interval=[0, 60],  # full trial is 0-3s, but edge effects
             paradigm="imagery",
             doi="10.5524/100295",

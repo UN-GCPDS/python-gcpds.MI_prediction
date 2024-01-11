@@ -380,7 +380,7 @@ class ModelControl():
          else:
             
             self.Model = Model ### DEFINIMOS EL MODELO COMO PROPIO DEL OBJETO
-            self.Model, History , acc=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose)
+            self.Model, History , acc=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,autoencoder=autoencoder)
             return History,acc
             
             

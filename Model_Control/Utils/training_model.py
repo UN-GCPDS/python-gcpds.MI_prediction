@@ -74,7 +74,7 @@ def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,aut
             else:
                  return 'otros métodos de validación no han sido implementados'
 
-def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batchSize,epochs,verbose,seed = 20200220,autoencoder=False):
+def redirectToTrain(Model,indice,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batchSize,epochs,verbose,seed = 20200220,autoencoder=False):
         
         """
         Parameters
@@ -248,10 +248,10 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     print("data genial: ")
 
                     if(autoencoder):
-                        for train_index, test_index in skf.split(X_train, Y_train[1]):
+                        for train_index, test_index in skf.split(X_train, Y_train[indice]):
                             print("data: ",train_index, test_index)
                             X_train_, X_test_ = X_train[train_index], X_train[test_index]
-                            y_train_, y_test_ = Y_train[1][train_index], Y_train[1][test_index]
+                            y_train_, y_test_ = Y_train[indice][train_index], Y_train[indice][test_index]
 
                             x_tr, x_v, y_tr, y_v = train_test_split(X_train_, y_train_, test_size=0.3,random_state=seed)
 
@@ -262,7 +262,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                             
                             Model.load_weights(callbacks['checkpoint_train'+str(c+1)].filepath)
                             pred = Model.predict(X_test_)
-                            preds.append(pred[1])
+                            preds.append(pred[indice])
                             y_preds = preds[c].argmax(axis = -1)
                             y_true.append(y_test_)
                             acc.append(np.mean(y_preds == y_test_))

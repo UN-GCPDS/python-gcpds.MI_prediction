@@ -323,7 +323,7 @@ class ModelControl():
                     acc=calAccuracy(self.Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,autoencoder)
                     return acc
 
-     def train_model(self,indice = 0,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,callbacks_names = None,call_args = None,validation_mode:str = None, batch_size:int =30,epochs:int = 100,verbose:int =1,autoencoder = False):
+     def train_model(self,Indice = 0,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,callbacks_names = None,call_args = None,validation_mode:str = None, batch_size:int =30,epochs:int = 100,verbose:int =1,autoencoder = False):
          
          """
         Parameters
@@ -371,7 +371,7 @@ class ModelControl():
          if(Model == None):
             ### VERIFICAMOS EL MODELO PROPIO PARA SABER SI SE COMPILO
 
-            self.Model, History , acc=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,autoencoder=autoencoder)
+            self.Model, History , acc=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,autoencoder=autoencoder,indice = Indice)
                 
                 ## PARA CALCULAR EL ACCURRACY UNA VEZ LO TENGA CLARO HASTA ESTE PUNTO PROCEDEMOS A GENERAR ESE APARTADO
             return History,acc
@@ -380,7 +380,7 @@ class ModelControl():
          else:
             
             self.Model = Model ### DEFINIMOS EL MODELO COMO PROPIO DEL OBJETO
-            self.Model, History , acc=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,autoencoder=autoencoder,indice=indice)
+            self.Model, History , acc=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,autoencoder=autoencoder,indice = Indice)
             return History,acc
             
             

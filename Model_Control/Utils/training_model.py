@@ -74,7 +74,7 @@ def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,aut
             else:
                  return 'otros métodos de validación no han sido implementados'
 
-def redirectToTrain(Model,indice,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batchSize,epochs,verbose,seed = 20200220,autoencoder=False):
+def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batchSize,epochs,verbose,seed = 20200220,autoencoder=False,indice=0):
         
         """
         Parameters

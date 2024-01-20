@@ -163,7 +163,6 @@ def load_dataset(dataset_name:str="BNCI2014001", subject_id:int=1, low_cut_hz:fl
         init_block_size = 1000 ## DEFINIR SI PUEDE SER DINAMICO O NO
         preprocessors = [
             Preprocessor('pick_types', eeg=True, meg=False, stim=False),  # Keep EEG sensors
-            Preprocessor('pick_channels',ch_names=Channels),
             Preprocessor(scale, factor=1e6, apply_on_array=True),  # Convert from V to uV
             Preprocessor('filter', l_freq=low_cut_hz, h_freq=high_cut_hz),  # Bandpass filter
             Preprocessor(exponential_moving_standardize,  # Exponential moving standardization

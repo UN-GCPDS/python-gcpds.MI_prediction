@@ -247,7 +247,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     skf = StratifiedKFold(n_splits=4)
                     print("data genial: ")
 
-                    if(autoencoder):
+                    if(autoencoder == True):
                         for train_index, test_index in skf.split(X_train, Y_train[indice]):
                             print("data: ",train_index, test_index)
                             X_train_, X_test_ = X_train[train_index], X_train[test_index]
@@ -274,6 +274,32 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                         acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
 
                         return Model,History,acc
+                    elif(autoencoder == 'MIN2NET'):
+                        for train_index, test_index in skf.split(X_train, Y_train[indice]):
+                            print("data: ",train_index, test_index)
+                            X_train_, X_test_ = X_train[train_index], X_train[test_index]
+                            y_train_, y_test_ = Y_train[indice][train_index], Y_train[indice][test_index]
+
+                            x_tr, x_v, y_tr, y_v = train_test_split(X_train_, y_train_, test_size=0.3,random_state=seed)
+
+                            callbacks_names = [callbacks['checkpoint_train'+str(c+1)],callbacks['early_stopping_train'+str(c+1)]]
+
+                            history= Model.fit(x_tr,[x_tr,y_tr,tf.keras.utils.to_categorical(y_tr,num_classes=2)],validation_data=(x_v, [x_v,y_v,tf.keras.utils.to_categorical(y_v,num_classes=2)]),batch_size=batchSize,epochs=epochs,verbose=verbose,callbacks=callbacks_names)
+                            History.append(history)
+                            
+                            Model.load_weights(callbacks['checkpoint_train'+str(c+1)].filepath)
+                            pred = Model.predict(X_test_)
+                            preds.append(pred[indice])
+                            y_preds = preds[c].argmax(axis = -1)
+                            y_true.append(y_test_)
+                            acc.append(np.mean(y_preds == y_test_))
+                            print("Fold %d Classification accuracy: %f " % (c+1,acc[c]))
+                            c += 1
+
+                        preds = np.concatenate(preds,axis=0)
+                        y_true = np.concatenate(y_true,axis=0)
+                        acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
+                        pass
                     else:
                         for train_index, test_index in skf.split(X_train, Y_train):
                             print("data: ",train_index, test_index)

@@ -43,7 +43,7 @@ def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,aut
                     preds = np.concatenate(preds,axis=0)
                     y_true = np.concatenate(y_true,axis=0)
                     acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
-                    kappa = cohen_kappa_score(preds, tf.keras.utils.to_categorical(y_true,num_classes=2))
+                    kappa = cohen_kappa_score(get_pred_labels(preds), y_true)
                     return acc , kappa
                 else:
                     preds = []
@@ -70,8 +70,8 @@ def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,aut
                     preds = np.concatenate(preds,axis=0)
                     y_true = np.concatenate(y_true,axis=0)
                     acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
-                    kappa = cohen_kappa_score(preds, tf.keras.utils.to_categorical(y_true,num_classes=2))
-                    return acc
+                    kappa = cohen_kappa_score(get_pred_labels(preds), y_true)
+                    return acc,kappa
             else:
                  return 'otros métodos de validación no han sido implementados'
 
